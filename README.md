@@ -91,9 +91,9 @@ python -m nowcast.train --config configs/smoke.yaml
 python scripts/select_events.py --out work/events.csv --n-train 6000 --n-val 500 --n-test 1000
 python scripts/fetch_hrrr.py --inventory "2018-06-01 18:00"   # every field should print OK
 python scripts/fetch_hrrr.py --inventory "2017-06-01 18:00"   # HRRRv2 period too
-python scripts/fetch_hrrr.py --events work/events.csv --out work/nwp --limit-hours 20   # time it
+python scripts/fetch_hrrr.py --events work/events.csv --out work/nwp --limit-jobs 20    # time it
 python scripts/check_alignment.py --events work/events.csv --n 12                       # fix flags if told
-python scripts/build_shards.py --events work/events.csv --nwp work/nwp --splits train --limit 100  # measure MB/event
+python scripts/build_shards.py --events work/events.csv --nwp work/nwp --out shards_trial --splits train --limit 100  # measure MB/event, then rm -rf shards_trial
 python scripts/fetch_hrrr.py --events work/events.csv --out work/nwp --workers 12
 python scripts/build_shards.py --events work/events.csv --nwp work/nwp --out shards --workers 12
 # tier 2 (hours 1-6): 40,950 HRRR downloads; start f02-f04 first if short on time
