@@ -1,0 +1,27 @@
+# Tiny CPU-capable run on synthetic 64x64 shards (scripts/make_synthetic.py --hr 64 --lr 16).
+data:
+  train_dir: shards/tiny/train
+  val_dir: shards/tiny/val
+  num_workers: 0
+  windows_per_event: 2
+
+model:
+  stem_ch: 16
+  chs: [16, 32, 48, 64]
+  enc_blocks: 1
+  dec_blocks: 1
+  attn_depth: 1
+  heads: 2
+  cond_dim: 32
+
+train:
+  out_dir: runs/smoke
+  batch_size: 2
+  lr: 1.0e-3
+  warmup_steps: 5
+  max_steps: 20
+  amp: fp32
+  channels_last: false
+  log_every: 5
+  val_batches: 2
+  min_free_gb: 0.0

@@ -1,0 +1,33 @@
+# Burst server (1 run per RTX 5090). Used by scripts/burst.sh; data and caches live in /dev/shm.
+#   GPU0: full model, --resume from the overnight checkpoint (continues its training)
+#   GPU1: radar-only control from scratch (compare with the overnight checkpoint at equal samples seen)
+data:
+  train_dir: /dev/shm/w/data/train
+  val_dir: /dev/shm/w/data/val
+  num_workers: 16
+  prefetch_factor: 4
+  windows_per_event: 3
+
+model:
+  modalities: [vil, ir, lght, nwp]
+  stem_ch: 64
+  chs: [128, 256, 384, 512]
+  enc_blocks: 2
+  dec_blocks: 2
+  attn_depth: 4
+  heads: 8
+
+train:
+  out_dir: /root/ckpt/full     # SSD: only latest.pt + final_ema_bf16.pt ever live here
+  batch_size: 16               # overwritten by the smoke-test result
+  lr: 5.0e-4
+  warmup_steps: 200            # re-warm when resuming
+  deadline_minutes: 120
+  reserve_minutes: 3
+  drop_p: 0.15
+  amp: bf16
+  compile: true
+  ckpt_every_min: 10
+  val_every_min: 20
+  val_batches: 30
+  min_free_gb: 2.0

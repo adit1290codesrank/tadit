@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# data + outputs never go in git
+shards/
+work/
+runs/
+results/
+*.pt
+*.h5
+*.grib2
+*.idx

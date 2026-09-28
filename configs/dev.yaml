@@ -1,0 +1,31 @@
+# Primary server (RTX 4060 Ti 16 GB). Overnight fallback run:
+#   python -m nowcast.train --config configs/dev.yaml --set train.deadline_minutes=540
+data:
+  train_dir: shards/train
+  val_dir: shards/val
+  num_workers: 10
+  windows_per_event: 3
+  rotate: true
+
+model:
+  modalities: [vil, ir, lght, nwp]
+  stem_ch: 64
+  chs: [128, 256, 384, 512]
+  enc_blocks: 2
+  dec_blocks: 2
+  attn_depth: 4
+  heads: 8
+
+train:
+  out_dir: runs/overnight
+  batch_size: 6            # confirm with the smoke run; aim for ~85% of VRAM
+  lr: 5.0e-4
+  warmup_steps: 500
+  deadline_minutes: 540
+  drop_p: 0.15
+  lght_weight: 10.0
+  amp: bf16
+  compile: false           # flip on once the smoke run passes; compile cache is arch-specific
+  ckpt_every_min: 15
+  val_every_min: 30
+  val_batches: 40
