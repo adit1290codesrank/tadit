@@ -25,6 +25,23 @@ The model is a **mid-fusion U-Net**:
 
 See `docs/PLAN.md` for the reasoning, the dataset ranking and the burst-server runbook.
 
+## India
+
+The models run on Indian data:
+- **INSAT-3DR/3DS** L1B (MOSDAC)
+- **GFS** (open)
+- **IMD DWR** reflectivity
+- **Indian lightning networks** (IITM ILLN CSV, or ISS-LIS for verification)
+
+Satellite and NWP inputs are adapted *in training* (INSAT resolution and scan rate, GFS variables). Any missing source is handled by modality dropout.
+
+```bash
+python -m nowcast.india.run --city Bhubaneswar --time 2024-05-10T09:00 \
+    --insat-dir data/insat --tier1 runs/full/final_ema_bf16.pt --tier2 runs/ext/best.pt --out results/india
+```
+
+`docs/PLAN.md` §5 covers what is open, what needs registration, and what to request today.
+
 ## Layout
 
 ```
@@ -34,6 +51,7 @@ src/nowcast/
   data/shards.py     per-event zstd blobs + mmap index (same format on both servers)
   data/dataset.py    random 25-frame windows, NWP hour selection, 90° rotations, prepare_batch
   data/synthetic.py  fake events in the real format (tests / pipeline dev)
+  india/             tiles, INSAT L1B reader, GFS, IMD radar (dBZ), lightning CSV / ISS-LIS, run.py CLI
   model/fusion.py    FusionNowcaster (tier 1)
   extended.py        tier 2: build / train / eval of the HRRR post-processor (+ raw-HRRR baselines)
   losses.py          intensity-weighted VIL loss + focal lightning loss

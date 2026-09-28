@@ -139,6 +139,12 @@ evaluate() {
   CUDA_VISIBLE_DEVICES=1 python -m nowcast.evaluate --ckpt "$CKPT/radar/final_ema_bf16.pt" \
     --data "$W/data/test" --out "$CKPT/results/radar.json" &
   wait
+  # the same model scored on INSAT-like satellite + GFS-like NWP inputs (what it gets over India)
+  CUDA_VISIBLE_DEVICES=0 python -m nowcast.evaluate --ckpt "$CKPT/full/final_ema_bf16.pt" \
+    --data "$W/data/test" --out "$CKPT/results/full_india_mode.json" --india-mode &
+  CUDA_VISIBLE_DEVICES=1 python -m nowcast.evaluate --ckpt "$CKPT/full/final_ema_bf16.pt" \
+    --data "$W/data/test" --out "$CKPT/results/full_india_mode_no_radar.json" --india-mode --drop vil,lght &
+  wait
   upload
 }
 

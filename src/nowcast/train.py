@@ -164,7 +164,7 @@ def main(argv=None) -> dict:
                 setattr(dc, k, rd[k])
     horizon = dict(t_in=dc.t_in, t_out=dc.t_out, out_step=dc.out_step)
     train_ds = NowcastDataset(dc.train_dir, train=True, windows_per_event=dc.windows_per_event,
-                              rotate=dc.rotate, **horizon)
+                              rotate=dc.rotate, india_aug_p=dc.india_aug_p, nwp_gfs_p=dc.nwp_gfs_p, **horizon)
     nwp_stats = train_ds.store.stats()
     nw = cfg.data.num_workers
     sampler = (DistributedSampler(train_ds, shuffle=True, seed=tc.seed, drop_last=True) if is_dist

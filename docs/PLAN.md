@@ -174,18 +174,68 @@ All lead times come out in one pass (SimVP-style), so the model is fast and comp
 | compile trouble | `--set train.compile=false` |
 | box dies | resume from the last uploaded `latest.pt`; the overnight model is the fallback |
 
-## 5. India
+## 5. India: running on Indian data
 
-Training is on the US because SEVIR is the only open, co-registered 4-source archive. The Indian equivalents map one to one:
+### The data situation, established by research and by probing the endpoints
 
-| SEVIR input | Indian equivalent |
-|---|---|
-| NEXRAD | IMD DWR |
-| GOES IR / WV | INSAT-3DS TIR1 / WV (MOSDAC) |
-| GLM | IITM lightning network |
-| HRRR | NCUM / IMD-GFS |
+| Leg | Indian source | Access | Status in the repo |
+|---|---|---|---|
+| Satellite | **INSAT-3DR / INSAT-3DS imager L1B** (MOSDAC) | Free MOSDAC registration, then order or download | `india/insat.py` reads TIR1/WV counts via the file's lookup tables, plus its lat/lon. Layout taken from satpy's `insat3d_img_l1b_h5` reader and fixture |
+| Radar | **IMD DWR** (mausam.imd.gov.in images; volumes on request) | Public images; data on request | `india/radar.py`: dBZ + lat/lon → approximate VIL (Greene & Clark), flagged "approximate" |
+| Lightning | **IITM Indian Lightning Location Network (ILLN)**, IMD feed, ENTLN/GLD360 | ILLN on request; commercial | `india/lightning.py`: any strike CSV → model channel |
+| Lightning (open) | **NASA ISS-LIS** flashes | Free Earthdata login | `iss_lis_to_csv()`; usable for verification only, since it sees each point ~90 s per pass |
+| NWP | **GFS 0.25°** (NOAA; AWS + NOMADS) | Open, no credentials | `india/gfs.py`, **verified on real data over India** |
+| NWP (Indian) | NCUM / IMD-GFS (NCMRWF) | On request | Same variable mapping applies |
 
-Modality dropout lets the model run **without radar**: pass `force_missing=("vil",)`, or `--drop vil` in `evaluate.py`. For an India demo:
-- Feed INSAT IR on the same quantisation.
-- Provide an NWP source mapped onto the same `NWP_VARS` list (ERA5 has CAPE, CIN, TCWV and shear from u/v levels; any field that is unavailable stays NaN, which becomes 0 after normalisation).
-- Treat demo skill as qualitative: this is a domain shift from the US training data.
+**The hard fact:** no open, high-resolution archive of Indian lightning observations exists.
+- ILLN is on request.
+- FY-4A's lightning imager (LMI) does not cover India.
+- GLM covers the Americas only.
+
+This is why the other SIH26072 team trains on synthetic labels. We train on real GLM lightning in the US instead, and adapt the model to Indian inputs.
+
+### Making the US-trained model Indian-ready (in training, not bolted on)
+
+Both happen in `data/dataset.py`; they are on by default in training with `india_aug_p` / `nwp_gfs_p` = 0.5.
+
+**`insat_like`** makes GOES frames look like INSAT:
+- TIR1 at 4 km and WV at 8 km;
+- a new scan only every 15 min (3DR + 3DS staggered) or 30 min, with the previous scan held in between.
+
+**`gfs_like`** makes HRRR fields look like GFS:
+- smoothed to ~24 km;
+- LTNG and updraft helicity removed (GFS doesn't have them).
+
+Tier 2 hides the same fields (`--gfs-p`).
+
+**Missing sources** are handled by modality dropout, so the model runs on whatever India has at the moment. `india/run.py` passes each source's real availability to the model.
+
+**Scoring on Indian-like inputs:** `evaluate.py --india-mode` and `extended eval --india-mode` score the models on INSAT-like + GFS-like inputs. `burst.sh eval` does this automatically, with and without radar and lightning.
+
+### India forecast CLI (`python -m nowcast.india.run`)
+- Takes a city (20 built in, lightning hotspots first) or a lat/lon, plus an issue time.
+- Uses whichever of INSAT, IMD radar, lightning CSV and GFS are available.
+- Tier 1 covers hours 1–`switch_hour`; tier 2 covers the rest.
+- Writes maps (`.npz`) and a JSON with per-source provenance (live / approximate / missing), hourly probability at the location and across the tile, and a risk level.
+
+**Verified with real GFS** for Bhubaneswar, 2024-05-10 09 UTC (a pre-monsoon case). The tile showed:
+- CAPE up to 2,900 J/kg
+- lifted index down to −8
+- mean 0–6 km shear 13 m/s
+- GFS reflectivity up to 40 dBZ
+
+The full 0–6 h run took 57 s.
+
+**Tiles:** 384 km Lambert tiles built with the same geometry code as the training patches (row 0 = south), so every source lands on the grid the model knows.
+
+### Start today (access has lead time)
+1. **MOSDAC account** (mosdac.gov.in): pull INSAT-3DR/3DS L1B for 2–3 recent Indian thunderstorm days in Odisha, West Bengal and the North-East (April–June, 08–14 UTC).
+2. **NASA Earthdata login**: download ISS-LIS for the same days, then `iss_lis_to_csv` to get verification flashes.
+3. **Email IITM** for an ILLN extract of those days. Even a few days allows a real India verification slide.
+4. **IMD radar:** save MAX-Z composites for the same cases if you can decode them to dBZ.
+5. **India maps:** use ISRO Bhuvan boundaries (Survey of India depiction), not Natural Earth.
+
+### What we claim, honestly
+- The skill numbers come from US held-out data, on real observations.
+- Over India, the model runs on real Indian inputs through a training-time adaptation, and is verified against ISS-LIS / ILLN only where we obtain them.
+- Every output says so (`model_trained_on` in the JSON).

@@ -47,6 +47,8 @@ def main(argv=None) -> dict:
     ap.add_argument("--t-in", type=int, default=T_IN, help="baselines only; checkpoints carry their horizon")
     ap.add_argument("--t-out", type=int, default=T_OUT)
     ap.add_argument("--out-step", type=int, default=OUT_STEP)
+    ap.add_argument("--india-mode", action="store_true",
+                    help="score on INSAT-like satellite + GFS-like NWP inputs (what the model gets in India)")
     args = ap.parse_args(argv)
     if bool(args.ckpt) == bool(args.baseline):
         raise SystemExit("give exactly one of --ckpt / --baseline")
@@ -69,7 +71,10 @@ def main(argv=None) -> dict:
         predict, name = pysteps_predictor(horizon["t_out"], horizon["out_step"]), {"baseline": "pysteps"}
     name["horizon"] = horizon
 
-    ds = NowcastDataset(args.data, train=False, windows_per_event=args.windows_per_event, stats=stats, **horizon)
+    p = 1.0 if args.india_mode else 0.0
+    ds = NowcastDataset(args.data, train=False, windows_per_event=args.windows_per_event, stats=stats,
+                        india_aug_p=p, nwp_gfs_p=p, **horizon)
+    name["india_mode"] = args.india_mode
     loader = DataLoader(ds, batch_size=args.batch_size, num_workers=args.workers,
                         pin_memory=device.type == "cuda")
     result, examples = run_eval(predict, loader, device, ds.lead_minutes, args.max_batches, args.save_examples)

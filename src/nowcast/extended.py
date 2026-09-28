@@ -33,6 +33,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
+from .data.dataset import GFS_MISSING_VARS
 from .data.hrrr import NWP_VARS, nwp_path, window_end_hours
 from .data.shards import STATS_FILE, ShardStore
 from .losses import lightning_loss, vil_loss
@@ -126,7 +127,7 @@ def build_split(shard_dir: str, nwp_root: str, out_dir: str, leads=LEADS, grid: 
 # =============================================================================== data
 
 class ExtDataset(Dataset):
-    def __init__(self, root: str, stats: dict, train: bool = False, rotate: bool = True):
+    def __init__(self, root: str, stats: dict, train: bool = False, rotate: bool = True, gfs_p: float = 0.0):
         self.x = np.load(os.path.join(root, "x.npy"), mmap_mode="r")      # [N, 2, V, g, g] fp16
         self.yl = np.load(os.path.join(root, "y_lght.npy"), mmap_mode="r")
         self.yv = np.load(os.path.join(root, "y_vil.npy"), mmap_mode="r")
@@ -135,8 +136,13 @@ class ExtDataset(Dataset):
         self.mean = np.asarray(stats["mean"], np.float32)[None, :, None, None]
         self.std = np.asarray(stats["std"], np.float32)[None, :, None, None]
         self.vars = list(stats["vars"])
+        self.train = train
         self.rotate = rotate and train
         self.i_ltng, self.i_refc = self.vars.index("ltng"), self.vars.index("refc")
+        # GFS (India) has no LTNG / updraft helicity: hide them in a fraction of samples (and always
+        # in --india-mode) so the model is trained for the fields it will actually get there
+        self.gfs_p = gfs_p
+        self.gfs_missing = [self.vars.index(v) for v in GFS_MISSING_VARS if v in self.vars]
 
     def __len__(self):
         return len(self.lead)
@@ -144,6 +150,8 @@ class ExtDataset(Dataset):
     def __getitem__(self, i):
         raw = np.asarray(self.x[i], np.float32)
         x = np.clip(np.nan_to_num((raw - self.mean) / self.std, nan=0.0, posinf=0.0, neginf=0.0), -10, 10)
+        if self.gfs_p and (torch.rand(1).item() if self.train else ((i * 2654435761) % 1000) / 1000) < self.gfs_p:
+            x[:, self.gfs_missing] = 0.0
         x = x.reshape(-1, *x.shape[-2:])
         yl = (np.asarray(self.yl[i]) > 0).astype(np.float32)
         yv = np.asarray(self.yv[i], np.float32) / 255.0
@@ -285,7 +293,7 @@ def train(args) -> dict:
     torch.manual_seed(args.seed)
     with open(os.path.join(args.data, STATS_FILE)) as f:
         stats = json.load(f)
-    tr = ExtDataset(os.path.join(args.data, "train"), stats, train=True)
+    tr = ExtDataset(os.path.join(args.data, "train"), stats, train=True, gfs_p=args.gfs_p)
     va = ExtDataset(os.path.join(args.data, "val"), stats) if os.path.isdir(os.path.join(args.data, "val")) else None
     dl = DataLoader(tr, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, drop_last=True,
                     pin_memory=device.type == "cuda", persistent_workers=args.workers > 0)
@@ -368,12 +376,14 @@ def main(argv=None):
     t.add_argument("--val-batches", type=int, default=100)
     t.add_argument("--deadline-minutes", type=float)
     t.add_argument("--seed", type=int, default=0)
+    t.add_argument("--gfs-p", type=float, default=0.5, help="fraction of samples with GFS-missing fields hidden")
     e = sub.add_parser("eval")
     e.add_argument("--ckpt", required=True)
     e.add_argument("--data", required=True)
     e.add_argument("--out", required=True)
     e.add_argument("--batch-size", type=int, default=256)
     e.add_argument("--workers", type=int, default=4)
+    e.add_argument("--india-mode", action="store_true", help="hide HRRR-only fields, as with GFS in India")
     args = ap.parse_args(argv)
 
     if args.cmd == "build":
@@ -386,7 +396,7 @@ def main(argv=None):
         return train(args)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, ck = load(args.ckpt, device)
-    ds = ExtDataset(args.data, ck["stats"])
+    ds = ExtDataset(args.data, ck["stats"], gfs_p=1.0 if args.india_mode else 0.0)
     res = evaluate(model, DataLoader(ds, batch_size=args.batch_size, num_workers=args.workers), device)
     res["run"] = {"ckpt": args.ckpt, "epoch": ck.get("epoch"), "samples": len(ds)}
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)

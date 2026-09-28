@@ -19,6 +19,10 @@ class DataConfig:
     t_in: int = 7
     t_out: int = 18
     out_step: int = 2
+    # India adaptation (training only): make this fraction of samples look like INSAT imagery
+    # (4/8 km, 15/30-min scans) and GFS NWP (no LTNG/UH, ~24 km). 0 disables.
+    india_aug_p: float = 0.5
+    nwp_gfs_p: float = 0.5
 
 
 @dataclass

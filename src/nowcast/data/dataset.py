@@ -32,9 +32,13 @@ class NowcastDataset(Dataset):
         t_in: int = T_IN,
         t_out: int = T_OUT,
         out_step: int = OUT_STEP,
+        india_aug_p: float = 0.0,
+        nwp_gfs_p: float = 0.0,
     ):
         self.store = ShardStore(root)
         self.train = train
+        self.india_aug_p = india_aug_p
+        self.nwp_gfs_p = nwp_gfs_p
         self.rotate = rotate and train
         self.t_in, self.t_out, self.out_step = t_in, t_out, out_step
         self.nwp_hours = nwp_hours_for(t_out, out_step)
@@ -45,6 +49,7 @@ class NowcastDataset(Dataset):
             self.nwp_std = np.asarray(stats["std"], np.float32)[:, None, None]
         else:
             self.nwp_vars = []
+        self.gfs_missing = [self.nwp_vars.index(v) for v in GFS_MISSING_VARS if v in self.nwp_vars]
         first = self.store.get(0)
         self.ir_channels = first["ir"].shape[1]
         self.hr = first["vil"].shape[-1]
@@ -62,6 +67,11 @@ class NowcastDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.store) * self.wpe
+
+    def _rng(self, i: int) -> np.random.Generator:
+        # training: fresh randomness per worker/epoch; evaluation: reproducible per sample
+        seed = int(torch.randint(0, 2**31 - 1, (1,))) if self.train else i
+        return np.random.default_rng(seed)
 
     def _start(self, k: int) -> int:
         if self.train:
@@ -101,6 +111,12 @@ class NowcastDataset(Dataset):
         t0 = int(a["times"][i0])
         nwp, nwp_ok = self._nwp(a, t0)
 
+        rng = self._rng(i)
+        if self.india_aug_p and rng.random() < self.india_aug_p:
+            ir_in = insat_like(ir_in, s, rng)
+        if self.nwp_gfs_p and rng.random() < self.nwp_gfs_p:
+            nwp = gfs_like(nwp, self.gfs_missing)
+
         # local solar time of day at the patch centre
         hour = ((t0 % 86400) / 3600.0 + float(a.get("center_lon", 0.0)) / 15.0) % 24.0
         tod = np.array([math.sin(2 * math.pi * hour / 24), math.cos(2 * math.pi * hour / 24)], np.float32)
@@ -123,6 +139,51 @@ class NowcastDataset(Dataset):
             "nwp_ok": nwp_ok,
             "tod": tod,
         }
+
+
+# ----------------------------------------------------------------------------- India adaptation
+# The model is trained on GOES-16 + HRRR (US) but must run on INSAT-3DR/3DS + GFS (India).
+# With probability p a training sample is made to look like the Indian inputs, so a single model
+# learns both and the Indian path is in-distribution rather than an afterthought.
+
+GFS_MISSING_VARS = ("ltng", "uh25")  # HRRR-only fields; absent from GFS 0.25 deg (checked on AWS)
+INSAT_RES_FACTOR = {0: 4, 1: 2}      # ir channel -> pooling factor on the 2 km grid: WV 8 km, TIR1 4 km
+INSAT_HOLD_FRAMES = (3, 6)           # 3DR+3DS staggered = 15 min; a single satellite = 30 min
+
+
+def _degrade(x: np.ndarray, f: int) -> np.ndarray:
+    """[T, H, W] uint8 -> block-averaged at f x coarser resolution, back on the original grid."""
+    T, H, W = x.shape
+    m = x.reshape(T, H // f, f, W // f, f).astype(np.float32).mean(axis=(2, 4))
+    return np.repeat(np.repeat(np.round(m), f, axis=1), f, axis=2).astype(np.uint8)
+
+
+def insat_like(ir: np.ndarray, start: int, rng: np.random.Generator) -> np.ndarray:
+    """GOES IR frames [T, 2, H, W] -> what INSAT would deliver: coarser pixels (TIR1 4 km, WV 8 km)
+    and a new scan only every 15 or 30 min (earlier scans held until the next one)."""
+    ir = ir.copy()
+    for c, f in INSAT_RES_FACTOR.items():
+        if ir.shape[-1] % f == 0:
+            ir[:, c] = _degrade(ir[:, c], f)
+    hold = int(rng.choice(INSAT_HOLD_FRAMES))
+    phase = int(rng.integers(0, hold))
+    g = start + np.arange(len(ir))
+    src = np.clip(g - ((g - phase) % hold) - start, 0, len(ir) - 1)
+    return ir[src]
+
+
+def _box3(x: np.ndarray) -> np.ndarray:
+    p = np.pad(x, [(0, 0)] * (x.ndim - 2) + [(1, 1), (1, 1)], mode="edge")
+    H, W = x.shape[-2:]
+    return sum(p[..., i : i + H, j : j + W] for i in range(3) for j in range(3)) / 9.0
+
+
+def gfs_like(nwp: np.ndarray, missing_idx: list[int]) -> np.ndarray:
+    """Normalised HRRR fields [hours, V, h, w] -> GFS-like: HRRR-only variables removed (0 = the
+    training mean, as for any missing field) and smoothed from 8 km to ~24 km (GFS is 0.25 deg)."""
+    out = _box3(nwp.astype(np.float32))
+    out[:, missing_idx] = 0.0
+    return out.astype(np.float16)
 
 
 def prepare_batch(batch: dict[str, torch.Tensor], device: torch.device):
