@@ -65,6 +65,45 @@ class VILMetrics:
         return out
 
 
+def pool_max(x: torch.Tensor, k: int) -> torch.Tensor:
+    """[B, T, H, W] -> [B, T, H/k, W/k] max-pool."""
+    if k <= 1:
+        return x
+    B, T, H, W = x.shape
+    return F.max_pool2d(x.reshape(B * T, 1, H, W), k).reshape(B, T, H // k, W // k)
+
+
+class LeadHourLightning:
+    """P(lightning in a cell during lead hour h) - the product IMD-style 3-hourly nowcasts and the
+    tier-2 NWP post-processor both issue, so tier 1 and tier 2 are scored on the same question.
+
+    Tier-1 steps are grouped into hours by lead time; the hourly probability is the max over the
+    steps in that hour and the target is 'any flash in that hour'. `pool` coarsens the grid
+    (2: 8 km -> 16 km, the tier-2 grid).
+    """
+
+    def __init__(self, lead_minutes, pool: int = 2):
+        self.pool = pool
+        self.bins: dict[int, list[int]] = {}
+        for i, m in enumerate(lead_minutes):
+            self.bins.setdefault((int(m) - 1) // 60 + 1, []).append(i)
+        self.m = {h: LightningMetrics(1, tolerances=(0,)) for h in self.bins}
+
+    @torch.no_grad()
+    def update(self, prob: torch.Tensor, target: torch.Tensor) -> None:
+        for h, idx in self.bins.items():
+            p = pool_max(prob[:, idx].amax(1, keepdim=True), self.pool)
+            t = pool_max(target[:, idx].amax(1, keepdim=True), self.pool)
+            self.m[h].update(p, t)
+
+    def compute(self) -> dict:
+        out = {}
+        for h, m in self.m.items():
+            r = m.compute()
+            out[str(h)] = {**r["tol0"], "brier": r["brier"], "base_rate": r["base_rate"]}
+        return out
+
+
 class LightningMetrics:
     def __init__(self, t_out: int, prob_thresholds=(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
                  tolerances=(0, 1)):

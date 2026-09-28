@@ -1,18 +1,18 @@
 import torch
 
 from conftest import HR, LR, tiny_model_cfg
-from nowcast.constants import T_IN, T_OUT
+from nowcast.constants import OUT_STEP, T_IN, T_OUT, nwp_hours_for
 from nowcast.losses import lightning_loss, total_loss, vil_weights
 from nowcast.metrics import LightningMetrics, VILMetrics
 from nowcast.model import FusionNowcaster
 
 
-def fake_inputs(B=2, V=11, nwp_ok=True):
+def fake_inputs(B=2, V=12, nwp_ok=True):
     return {
         "vil": torch.rand(B, T_IN, HR, HR),
         "ir": torch.rand(B, T_IN * 2, HR, HR),
         "lght": torch.rand(B, T_IN, LR, LR),
-        "nwp": torch.randn(B, 3 * V, LR, LR),
+        "nwp": torch.randn(B, nwp_hours_for(T_OUT, OUT_STEP) * V, LR, LR),
         "tod": torch.randn(B, 2),
         "present": {"nwp": torch.full((B,), nwp_ok)},
     }
@@ -86,3 +86,16 @@ def test_metrics_perfect_and_empty():
     lm.update(tg, tg)
     r = lm.compute()
     assert r["tol0"]["csi"] == 1.0 and r["brier"] == 0.0
+
+
+def test_lead_hour_lightning_bins():
+    from nowcast.metrics import LeadHourLightning
+
+    leads = [10 * (k + 1) for k in range(18)]
+    m = LeadHourLightning(leads, pool=2)
+    assert {h: len(v) for h, v in m.bins.items()} == {1: 6, 2: 6, 3: 6}
+    t = torch.zeros(2, 18, 8, 8)
+    t[:, 7, 2, 3] = 1  # lightning at 80 min -> hour 2
+    m.update(t.clone(), t)
+    r = m.compute()
+    assert r["2"]["csi"] == 1.0 and r["2"]["base_rate"] > 0 and r["1"]["base_rate"] == 0

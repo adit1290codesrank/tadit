@@ -5,6 +5,10 @@ data:
   val_dir: shards/val
   num_workers: 10
   windows_per_event: 3
+  # 30 min of 5-min history -> 18 steps x 10 min = 0-3 h (tier 1). 7 windows per 4 h event.
+  t_in: 7
+  t_out: 18
+  out_step: 2
   rotate: true
 
 model:

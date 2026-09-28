@@ -18,7 +18,7 @@ def tiny_shards(tmp_path_factory):
 def tiny_model_cfg(**kw):
     from nowcast.model import ModelConfig
 
-    base = dict(nwp_vars=11, stem_ch=16, chs=(16, 32, 48, 64), enc_blocks=1, dec_blocks=1,
+    base = dict(nwp_vars=12, stem_ch=16, chs=(16, 32, 48, 64), enc_blocks=1, dec_blocks=1,
                 attn_depth=1, heads=2, cond_dim=32)
     base.update(kw)
     return ModelConfig(**base)

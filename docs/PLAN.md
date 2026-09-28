@@ -1,5 +1,50 @@
 # SIH26072 Implementation Plan
 
+## 0. Forecast horizon: seamless 0–6 h in two tiers
+
+**Why 1 h is not enough**
+- **IMD's operational thunderstorm and lightning nowcasts** cover the **next 3 hours**, reissued every 3 hours by district and station ([IMD nowcast portal](https://mausam.imd.gov.in/imd_latest/contents/stationwise-nowcast-warning.php), [example IMD alerts](https://ommcomnews.com/odisha-news/thunderstorms-with-lightning-expected-in-nine-dists-in-next-three-hours-imd/)).
+- **Other SIH26072 teams** publicly pitch **0–6 h** ([example](https://github.com/Avenger2007/SIH-Nowcasting-)).
+
+**What the literature says about horizon**
+
+| Source | Finding |
+|---|---|
+| Blending studies ([NOAA report](https://repository.library.noaa.gov/view/noaa/32133/noaa_32133_DS1.pdf), [pysteps blending](https://rmets.onlinelibrary.wiley.com/doi/10.1002/qj.4461)) | Radar extrapolation beats NWP up to **~2 h**; NWP wins after that. Operational systems blend the two, shifting weight to NWP with lead time. |
+| [NowcastNet (Nature 2023)](https://www.nature.com/articles/s41586-023-06184-4) | Radar-only deep learning skilful up to **3 h**. |
+| [MetNet-2 (Nat. Comms 2022)](https://www.nature.com/articles/s41467-022-32483-x) | Reaches **12 h**, but needs a 2048 km context. Its "Postprocess" variant maps HRRR forecasts to calibrated probabilities. |
+
+**SEVIR limits:** events are 4 h long (49 frames) over 384 km patches.
+- Storms move 30–60 km/h, so after 2–3 h the weather in the patch comes from outside it.
+- Observations alone therefore cannot carry a 6 h forecast.
+
+### Design
+
+| | Tier 1: multimodal fusion nowcast | Tier 2: NWP post-processor (`nowcast.extended`) |
+|---|---|---|
+| Lead | **0–3 h**, 18 steps × 10 min | **lead hours 1–6** |
+| Inputs | 30 min of radar, IR and lightning (5 min) + HRRR f01 | HRRR fields valid at V−1h and V, both from the run initialised at V−(k+1)h (latest run 1 h after issue). No observations |
+| Output grid | VIL 2 km, lightning 8 km | lightning probability and VIL max at 16 km |
+| Target | VIL frames; "any flash in each 10-min interval" | any GLM flash, and max VIL, during (V−1h, V] |
+| Training data | 7 windows per event (52k in train) | 140,880 samples (18,724 train windows × 6 leads) |
+| Where it trains | overnight + burst (60M params) | primary, Day 2; small U-Net, minutes to an hour |
+
+**Crossover evaluation:** both tiers are scored on the same question, "lightning in this 16 km cell during lead hour k":
+- tier 1 via `lght_lead_hour_16km` in `evaluate.py`;
+- tier 2 via `extended eval`, which also scores raw HRRR LTNG and REFC as baselines.
+
+`scripts/crossover.py` prints the 0–6 h scorecard. The **operational product uses tier 1 up to the measured crossover hour and tier 2 after it.** That crossover plot is the core judge slide.
+
+**What the extra horizon costs**
+- Tier-1 windows per event drop from 25 to 7. This is compensated by random window starts and 7,500 events.
+- Tier 2 needs HRRR f02–f07: **40,950 downloads** (6,825 unique hours), on a 16 km grid.
+  - About 2 h on 12 workers at sandbox speed; run it in parallel with the SEVIR build.
+  - Priority if short on time: `--fxx 2,3,4` (lead hours 1–3, the crossover), then `5,6,7`.
+
+**Horizon is configurable:** `data.t_in / t_out / out_step`.
+- The Earthformer benchmark setting (13 → 12 × 5 min) is still available.
+- `NowcastDataset` rejects a horizon that does not fit a 49-frame event.
+
 ## 1. Data: SEVIR + HRRR
 
 SEVIR is the only open archive where radar, satellite and lightning are **already co-registered**:
@@ -65,7 +110,7 @@ The design follows Leinonen et al.:
 - **Bottleneck** of 4 blocks: self-attention plus **cross-attention from observation tokens to NWP tokens**
 - **Decoder** with FiLM conditioning on time of day, pooled NWP and the presence mask
 
-**Output heads:** VIL for 12 lead times at 2 km, and lightning logits for 12 lead times at 8 km.
+**Output heads:** VIL for 18 lead times (10–180 min) at 2 km, and lightning logits for 18 lead times at 8 km.
 All lead times come out in one pass (SimVP-style), so the model is fast and compiles cleanly.
 
 **Training choices**
@@ -88,6 +133,7 @@ All lead times come out in one pass (SimVP-style), so the model is fast and comp
 | Day 1 overnight | 4060 Ti | 9 h | **full model, fallback** (`configs/dev.yaml`) |
 | Burst | 5090 #0 | 2 h | full model **`--resume` from the overnight checkpoint** → ≈ 17–19 4060 Ti-h total |
 | Burst | 5090 #1 | 2 h | radar-only control from scratch (≈ 8–10 4060 Ti-h) |
+| Day 2, during the burst | 4060 Ti | ≤ 1 h | **tier 2** NWP post-processor (`python -m nowcast.extended train`); the primary GPU is free while the burst runs |
 
 **Ablation:** compare the radar-only control with the **overnight checkpoint**, and match them by `samples` seen, not by hours. Both are logged and stored in every checkpoint.
 

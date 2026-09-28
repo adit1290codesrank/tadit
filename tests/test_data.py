@@ -84,20 +84,20 @@ def test_dataset_shapes_and_batch(tiny_shards):
     assert s["vil_in"].shape == (T_IN, HR, HR) and s["vil_out"].shape == (T_OUT, HR, HR)
     assert s["ir_in"].shape == (T_IN, 2, HR, HR)
     assert s["lght_in"].shape == (T_IN, LR, LR) and s["lght_out"].shape == (T_OUT, LR, LR)
-    assert s["nwp"].shape == (3, len(ds.nwp_vars), LR, LR) and s["nwp_ok"].all()
+    assert s["nwp"].shape == (ds.nwp_hours, len(ds.nwp_vars), LR, LR) and s["nwp_ok"].all()
     assert s["vil_in"].dtype == np.uint8
 
     b = next(iter(DataLoader(ds, batch_size=3)))
     x, y = prepare_batch(b, torch.device("cpu"))
     assert x["ir"].shape == (3, T_IN * 2, HR, HR)
-    assert x["nwp"].shape == (3, 3 * len(ds.nwp_vars), LR, LR)
+    assert x["nwp"].shape == (3, ds.nwp_hours * len(ds.nwp_vars), LR, LR)
     assert 0 <= float(x["vil"].min()) and float(x["vil"].max()) <= 1
     assert set(torch.unique(y["lght"]).tolist()) <= {0.0, 1.0}
 
 
 def test_eval_windows_are_deterministic_and_cover_event(tiny_shards):
     ds = NowcastDataset(f"{tiny_shards}/val", train=False, windows_per_event=3, rotate=True)
-    assert [ds._start(k) for k in range(3)] == [0, 12, 24]
+    assert [ds._start(k) for k in range(3)] == [0, 3, 6]  # 49 - 7 - 18*2 = 6 spare frames
     np.testing.assert_array_equal(ds[1]["vil_in"], ds[1]["vil_in"])
 
 
@@ -110,3 +110,33 @@ def test_nwp_hour_selection(tiny_shards):
     expect = (a["nwp"][h0].astype(np.float32) - ds.nwp_mean) / ds.nwp_std
     np.testing.assert_allclose(out[0].astype(np.float32), expect, atol=2e-2, rtol=1e-2)
     assert ok.all()
+
+
+def test_horizon_target_alignment(tiny_shards):
+    """VIL targets are frames t0+2, t0+4, ...; lightning targets sum the 2 frames of each interval."""
+    ds = NowcastDataset(f"{tiny_shards}/val", train=False, windows_per_event=1, t_in=7, t_out=18, out_step=2)
+    a = ds.store.get(0)
+    s = ds._start(0)
+    i0 = s + 6
+    x = ds[0]
+    np.testing.assert_array_equal(x["vil_in"], a["vil"][s : i0 + 1])
+    np.testing.assert_array_equal(x["vil_out"][0], a["vil"][i0 + 2])
+    np.testing.assert_array_equal(x["vil_out"][-1], a["vil"][i0 + 36])
+    expect = a["lght"][i0 + 1].astype(int) + a["lght"][i0 + 2]
+    np.testing.assert_array_equal(x["lght_out"][0], np.minimum(expect, 255))
+    assert ds.lead_minutes[0] == 10 and ds.lead_minutes[-1] == 180
+    assert ds.nwp_hours == 4 and x["nwp"].shape[0] == 4
+
+
+def test_legacy_one_hour_horizon(tiny_shards):
+    ds = NowcastDataset(f"{tiny_shards}/val", train=False, windows_per_event=3, t_in=13, t_out=12, out_step=1)
+    x = ds[0]
+    assert x["vil_in"].shape[0] == 13 and x["vil_out"].shape[0] == 12
+    assert [ds._start(k) for k in range(3)] == [0, 12, 24] and ds.nwp_hours == 2
+
+
+def test_horizon_too_long_is_rejected(tiny_shards):
+    import pytest
+
+    with pytest.raises(ValueError):
+        NowcastDataset(f"{tiny_shards}/val", train=False, t_in=13, t_out=20, out_step=2)

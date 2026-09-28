@@ -15,6 +15,10 @@ class DataConfig:
     prefetch_factor: int = 4
     windows_per_event: int = 3
     rotate: bool = True
+    # horizon: t_in frames of 5-min history -> t_out targets every out_step frames
+    t_in: int = 7
+    t_out: int = 18
+    out_step: int = 2
 
 
 @dataclass

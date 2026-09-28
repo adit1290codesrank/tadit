@@ -6,19 +6,21 @@ import numpy as np
 import torch
 
 
-def persistence_predictor(t_out: int):
+def persistence_predictor(t_out: int, out_step: int = 1):
+    """Last VIL frame, and 'lightning in the last out_step frames', held for every lead."""
     @torch.no_grad()
     def predict(x):
         vil = x["vil"][:, -1:].expand(-1, t_out, -1, -1).clamp(0, 1)
-        lg = (x["lght"][:, -1:] > 0).float().expand(-1, t_out, -1, -1)
+        lg = (x["lght"][:, -out_step:] > 0).any(1, keepdim=True).float().expand(-1, t_out, -1, -1)
         return {"vil": vil.contiguous(), "lght_prob": lg.contiguous()}
 
     return predict
 
 
-def pysteps_predictor(t_out: int, n_frames: int = 4):
+def pysteps_predictor(t_out: int, out_step: int = 1, n_frames: int = 4):
     """Lucas-Kanade motion on the last `n_frames` VIL frames + semi-Lagrangian extrapolation.
-    Lightning is advected with the same (rescaled) motion field. CPU-bound: run it on spare cores."""
+    Lightning is advected with the same (rescaled) motion field. CPU-bound: run it on spare cores.
+    Motion is estimated per 5-min frame, so lead k is extrapolated (k+1)*out_step frames ahead."""
     from pysteps import extrapolation, motion
 
     oflow = motion.get_method("LK")
@@ -33,12 +35,13 @@ def pysteps_predictor(t_out: int, n_frames: int = 4):
         r = H // h
         out_v = np.zeros((B, t_out, H, W), np.float32)
         out_l = np.zeros((B, t_out, h, h), np.float32)
+        steps = [float(out_step * (k + 1)) for k in range(t_out)]
         for b in range(B):
             v = oflow(vil[b, -n_frames:])
-            fv = extrap(vil[b, -1], v, t_out)
+            fv = extrap(vil[b, -1], v, steps)
             out_v[b] = np.nan_to_num(fv, nan=0.0)
             vl = v[:, r // 2 :: r, r // 2 :: r] / r
-            fl = extrap(lg[b, -1], vl, t_out)
+            fl = extrap(lg[b, -1], vl, steps)
             out_l[b] = np.nan_to_num(fl, nan=0.0)
         dev = x["vil"].device
         return {"vil": torch.from_numpy(out_v).clamp(0, 1).to(dev),

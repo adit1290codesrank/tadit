@@ -65,8 +65,21 @@ def derive(fields: dict[str, np.ndarray | None], shape: tuple[int, int]) -> np.n
     return np.stack([out[v] for v in NWP_VARS]).astype(np.float32)
 
 
-def fetch_hour(valid_time, save_dir: str | None = None, fields=HRRR_FIELDS):
-    """Download the f01 forecast valid at `valid_time`. Returns (fields, lat, lon)."""
+def nwp_path(root: str, hour_unix: int, fxx: int = LEAD_H, grid: int = 48) -> str:
+    """Cache layout: f01 on the 48 grid (tier 1) at <root>/<YYYYmmddHH>.npz, everything else under
+    <root>/f<fxx>_g<grid>/<YYYYmmddHH>.npz. Each file maps event id -> [V, grid, grid] fp16."""
+    import os
+    import time as _time
+
+    name = _time.strftime("%Y%m%d%H", _time.gmtime(int(hour_unix))) + ".npz"
+    if fxx == LEAD_H and grid == 48:
+        return os.path.join(root, name)
+    return os.path.join(root, f"f{fxx:02d}_g{grid}", name)
+
+
+def fetch_hour(valid_time, save_dir: str | None = None, fields=HRRR_FIELDS, fxx: int = LEAD_H):
+    """Download the forecast valid at `valid_time` from the run initialised fxx hours earlier.
+    Returns (fields, lat, lon)."""
     import pandas as pd
     from herbie import Herbie
 
@@ -78,7 +91,7 @@ def fetch_hour(valid_time, save_dir: str | None = None, fields=HRRR_FIELDS):
     got, lat, lon = {}, None, None
     try:
         # archives only: NOMADS keeps ~2 days, so for 2018-19 it can only waste time or fail
-        H = Herbie(valid - pd.Timedelta(hours=LEAD_H), model="hrrr", product="sfc", fxx=LEAD_H,
+        H = Herbie(valid - pd.Timedelta(hours=fxx), model="hrrr", product="sfc", fxx=fxx,
                    priority=list(SOURCES), verbose=False, **kw)
         if H.grib is None:
             raise FileNotFoundError("not found in any archive")
@@ -130,6 +143,16 @@ class Regridder:
         i, w, shape = wts
         flat = field.reshape(*field.shape[:-2], -1)
         return (flat[..., i] * w).sum(-1).reshape(*field.shape[:-2], *shape).astype(np.float32)
+
+
+def window_end_hours(times_unix: np.ndarray, frames_per_hour: int = 12) -> np.ndarray:
+    """Hours V whose preceding hour (V - 60 min, V] is fully covered by the event's frames.
+    These are the tier-2 target windows ('lightning during lead hour k')."""
+    t = np.asarray(times_unix, np.int64)
+    first = int(t.min()) // 3600 * 3600 + 3600
+    out = [V for V in range(first, int(t.max()) + 1, 3600)
+           if ((t > V - 3600) & (t <= V)).sum() >= frames_per_hour]
+    return np.asarray(out, np.int64)
 
 
 def valid_hours(times_unix: np.ndarray, extra_h: int = 2) -> np.ndarray:

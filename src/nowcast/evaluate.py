@@ -17,7 +17,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from .baselines import persistence_predictor, pysteps_predictor
-from .constants import T_OUT
+from .constants import OUT_STEP, T_IN, T_OUT
 from .data.dataset import NowcastDataset
 from .evaluation import model_predictor, run_eval, summary
 from .model.fusion import FusionNowcaster, ModelConfig
@@ -44,28 +44,35 @@ def main(argv=None) -> dict:
     ap.add_argument("--max-batches", type=int)
     ap.add_argument("--windows-per-event", type=int, default=3)
     ap.add_argument("--save-examples", type=int, default=0)
+    ap.add_argument("--t-in", type=int, default=T_IN, help="baselines only; checkpoints carry their horizon")
+    ap.add_argument("--t-out", type=int, default=T_OUT)
+    ap.add_argument("--out-step", type=int, default=OUT_STEP)
     args = ap.parse_args(argv)
     if bool(args.ckpt) == bool(args.baseline):
         raise SystemExit("give exactly one of --ckpt / --baseline")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     stats = None
+    horizon = dict(t_in=args.t_in, t_out=args.t_out, out_step=args.out_step)
     if args.ckpt:
         model, ck = load_model(args.ckpt, device, args.weights)
         stats = ck.get("nwp_stats")  # always normalise with the training statistics
+        cd = ck.get("config", {}).get("data", {})
+        horizon = {k: cd.get(k, v) for k, v in horizon.items()}
         drop = tuple(m for m in args.drop.split(",") if m)
         amp = torch.bfloat16 if device.type == "cuda" else None
         predict = model_predictor(model, amp, force_missing=drop)
         name = {"ckpt": args.ckpt, "drop": list(drop), "step": ck.get("step"), "samples": ck.get("samples")}
     elif args.baseline == "persistence":
-        predict, name = persistence_predictor(T_OUT), {"baseline": "persistence"}
+        predict, name = persistence_predictor(horizon["t_out"], horizon["out_step"]), {"baseline": "persistence"}
     else:
-        predict, name = pysteps_predictor(T_OUT), {"baseline": "pysteps"}
+        predict, name = pysteps_predictor(horizon["t_out"], horizon["out_step"]), {"baseline": "pysteps"}
+    name["horizon"] = horizon
 
-    ds = NowcastDataset(args.data, train=False, windows_per_event=args.windows_per_event, stats=stats)
+    ds = NowcastDataset(args.data, train=False, windows_per_event=args.windows_per_event, stats=stats, **horizon)
     loader = DataLoader(ds, batch_size=args.batch_size, num_workers=args.workers,
                         pin_memory=device.type == "cuda")
-    result, examples = run_eval(predict, loader, device, T_OUT, args.max_batches, args.save_examples)
+    result, examples = run_eval(predict, loader, device, ds.lead_minutes, args.max_batches, args.save_examples)
     result = {"run": name, "summary": summary(result), **result}
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)

@@ -21,16 +21,18 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from ..constants import OUT_STEP, T_IN, T_OUT, nwp_hours_for
+
 OBS = ("vil", "ir", "lght")
 
 
 @dataclass
 class ModelConfig:
-    t_in: int = 13
-    t_out: int = 12
+    t_in: int = T_IN
+    t_out: int = T_OUT
     ir_channels: int = 2
     nwp_vars: int = 12
-    nwp_hours: int = 3
+    nwp_hours: int = nwp_hours_for(T_OUT, OUT_STEP)
     modalities: tuple = ("vil", "ir", "lght", "nwp")
     stem_ch: int = 64
     chs: tuple = (128, 256, 384, 512)

@@ -29,7 +29,6 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler, RandomSampler, Subset
 
 from .config import load_config
-from .constants import T_IN, T_OUT
 from .data.dataset import NowcastDataset, prepare_batch
 from .evaluation import model_predictor, run_eval, summary
 from .losses import total_loss
@@ -155,8 +154,17 @@ def main(argv=None) -> dict:
     signal.signal(signal.SIGINT, _on_signal)
 
     # ------------------------------------------------------------------ data
-    train_ds = NowcastDataset(cfg.data.train_dir, train=True, windows_per_event=cfg.data.windows_per_event,
-                              rotate=cfg.data.rotate)
+    resume = torch.load(args.resume, map_location="cpu", weights_only=False) if args.resume else None
+    dc = cfg.data
+    if resume:  # a resumed run keeps the horizon it was trained with
+        rd = resume.get("config", {}).get("data", {})
+        for k in ("t_in", "t_out", "out_step"):
+            if k in rd and rd[k] != getattr(dc, k):
+                log(event="warning", msg=f"--resume: using checkpoint {k}={rd[k]} (config had {getattr(dc, k)})")
+                setattr(dc, k, rd[k])
+    horizon = dict(t_in=dc.t_in, t_out=dc.t_out, out_step=dc.out_step)
+    train_ds = NowcastDataset(dc.train_dir, train=True, windows_per_event=dc.windows_per_event,
+                              rotate=dc.rotate, **horizon)
     nwp_stats = train_ds.store.stats()
     nw = cfg.data.num_workers
     sampler = (DistributedSampler(train_ds, shuffle=True, seed=tc.seed, drop_last=True) if is_dist
@@ -167,18 +175,18 @@ def main(argv=None) -> dict:
     val_loader = None
     if main_proc and cfg.data.val_dir and os.path.isdir(cfg.data.val_dir):
         val_ds = NowcastDataset(cfg.data.val_dir, train=False, windows_per_event=cfg.data.windows_per_event,
-                                stats=nwp_stats)
+                                stats=nwp_stats, **horizon)
         n = min(len(val_ds), tc.val_batches * tc.batch_size)
         pick = np.random.default_rng(0).permutation(len(val_ds))[:n].tolist()
         val_loader = DataLoader(Subset(val_ds, pick), batch_size=tc.batch_size, num_workers=min(nw, 4),
                                 pin_memory=device.type == "cuda")
 
     # ------------------------------------------------------------------ model
-    resume = torch.load(args.resume, map_location="cpu", weights_only=False) if args.resume else None
     if resume:
         mkw = dict(resume["model_cfg"])
     else:
-        mkw = dict(t_in=T_IN, t_out=T_OUT, ir_channels=train_ds.ir_channels, nwp_vars=len(train_ds.nwp_vars))
+        mkw = dict(t_in=dc.t_in, t_out=dc.t_out, nwp_hours=train_ds.nwp_hours,
+                   ir_channels=train_ds.ir_channels, nwp_vars=len(train_ds.nwp_vars))
         mkw.update(cfg.model)
     mcfg = ModelConfig(**mkw)
     if "nwp" in mcfg.modalities and mcfg.nwp_vars == 0:
@@ -294,7 +302,7 @@ def main(argv=None) -> dict:
             t_log, s_log = time.time(), samples
 
             if do_val and val_loader is not None and main_proc and not stop:
-                res, _ = run_eval(model_predictor(ema.shadow, amp_dtype), val_loader, device, T_OUT)
+                res, _ = run_eval(model_predictor(ema.shadow, amp_dtype), val_loader, device, train_ds.lead_minutes)
                 log(event="val", step=step, samples=samples, **summary(res))
                 last_val = time.time()
             elif do_val:
@@ -314,7 +322,7 @@ def main(argv=None) -> dict:
         light["ema"] = {k: (v.to(torch.bfloat16) if v.is_floating_point() else v) for k, v in light["ema"].items()}
         atomic_save(light, os.path.join(tc.out_dir, "final_ema_bf16.pt"), 0.2, log)
         if val_loader is not None:
-            res, _ = run_eval(model_predictor(ema.shadow, amp_dtype), val_loader, device, T_OUT)
+            res, _ = run_eval(model_predictor(ema.shadow, amp_dtype), val_loader, device, train_ds.lead_minutes)
             final = summary(res)
             log(event="final_val", step=step, samples=samples, **final)
         log(event="done", step=step, samples=samples, minutes=(time.time() - t_start) / 60)

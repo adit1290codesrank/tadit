@@ -10,7 +10,7 @@ import numpy as np
 import torch
 
 from .data.dataset import prepare_batch
-from .metrics import LightningMetrics, VILMetrics
+from .metrics import LeadHourLightning, LightningMetrics, VILMetrics
 
 
 def model_predictor(model, amp_dtype=torch.bfloat16, force_missing: tuple = ()):
@@ -25,8 +25,10 @@ def model_predictor(model, amp_dtype=torch.bfloat16, force_missing: tuple = ()):
 
 
 @torch.no_grad()
-def run_eval(predict, loader, device, t_out: int, max_batches: int | None = None, save_examples: int = 0):
-    vm, lm = VILMetrics(t_out), LightningMetrics(t_out)
+def run_eval(predict, loader, device, lead_minutes, max_batches: int | None = None, save_examples: int = 0):
+    """lead_minutes: lead time (min) of each output step, e.g. dataset.lead_minutes."""
+    t_out = len(lead_minutes)
+    vm, lm, hm = VILMetrics(t_out), LightningMetrics(t_out), LeadHourLightning(lead_minutes)
     examples = {"vil_in": [], "vil_true": [], "vil_pred": [], "lght_true": [], "lght_prob": []}
     n_saved = 0
     for i, batch in enumerate(loader):
@@ -36,6 +38,7 @@ def run_eval(predict, loader, device, t_out: int, max_batches: int | None = None
         out = predict(x)
         vm.update(out["vil"], y["vil"])
         lm.update(out["lght_prob"], y["lght"])
+        hm.update(out["lght_prob"], y["lght"])
         if n_saved < save_examples:
             k = min(save_examples - n_saved, y["vil"].shape[0])
             examples["vil_in"].append((x["vil"][:k] * 255).round().byte().cpu().numpy())
@@ -44,7 +47,8 @@ def run_eval(predict, loader, device, t_out: int, max_batches: int | None = None
             examples["lght_true"].append(y["lght"][:k].byte().cpu().numpy())
             examples["lght_prob"].append(out["lght_prob"][:k].half().cpu().numpy())
             n_saved += k
-    result = {"vil": vm.compute(), "lght": lm.compute()}
+    result = {"lead_minutes": list(map(int, lead_minutes)), "vil": vm.compute(), "lght": lm.compute(),
+              "lght_lead_hour_16km": hm.compute()}
     ex = {k: np.concatenate(v) for k, v in examples.items() if v} if n_saved else None
     return result, ex
 
@@ -52,7 +56,7 @@ def run_eval(predict, loader, device, t_out: int, max_batches: int | None = None
 def summary(result: dict) -> dict:
     """The handful of numbers worth printing in a log line / results table."""
     v, l = result["vil"], result["lght"]
-    return {
+    s = {
         "vil_csi_m": v["pool1"]["csi_m"],
         "vil_csi_m_pool16": v.get("pool16", v["pool1"])["csi_m"],
         "vil_csi_74": v["pool1"]["csi_per_threshold"].get("74"),
@@ -62,3 +66,6 @@ def summary(result: dict) -> dict:
         "lght_csi_tol1": l.get("tol1", l["tol0"])["csi"],
         "lght_brier": l["brier"],
     }
+    for h, r in result.get("lght_lead_hour_16km", {}).items():
+        s[f"lght_csi_hour{h}_16km"] = r["csi"]
+    return s
