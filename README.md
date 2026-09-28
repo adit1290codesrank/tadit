@@ -28,7 +28,7 @@ See `docs/PLAN.md` for the reasoning, the dataset ranking and the burst-server r
 ## India
 
 The models run on Indian data:
-- **INSAT-3DR/3DS** L1B (MOSDAC)
+- **INSAT-3DR/3DS** L1B (MOSDAC), or **GK2A** satellite imagery over India from NOAA's open bucket (`--gk2a`, no login)
 - **GFS** (open)
 - **IMD DWR** reflectivity
 - **Indian lightning networks** (IITM ILLN CSV, or ISS-LIS for verification)
@@ -36,7 +36,7 @@ The models run on Indian data:
 Satellite and NWP inputs are adapted *in training* (INSAT resolution and scan rate, GFS variables). Any missing source is handled by modality dropout.
 
 ```bash
-python -m nowcast.india.run --city Bhubaneswar --time 2024-05-10T09:00 \
+python -m nowcast.india.run --city Bhubaneswar --time 2024-05-10T09:00 --gk2a \
     --insat-dir data/insat --tier1 runs/full/final_ema_bf16.pt --tier2 runs/ext/best.pt --out results/india
 ```
 

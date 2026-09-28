@@ -7,6 +7,7 @@
 Sources (each optional except NWP for tier 2; whatever is missing is passed to the model as missing,
 which it was trained for with modality dropout):
   satellite  INSAT-3DR/3DS L1B files (MOSDAC)          -> tier 1 IR channels
+             or --gk2a: GK2A AMI from NOAA's open bucket (no login), same channels
   radar      IMD DWR reflectivity (dBZ + lat/lon, .npz) -> tier 1 radar channel (approx. VIL)
   lightning  strike CSV (IITM ILLN / IMD / ENTLN)       -> tier 1 lightning channel
   NWP        GFS 0.25 (NOAA, open)                      -> tier 1 NWP + tier 2 input
@@ -27,7 +28,7 @@ import torch
 from ..constants import FRAME_SECONDS, LGHT_LOG_SCALE
 from ..data.dataset import GFS_MISSING_VARS
 from ..metrics import pool_max
-from . import gfs, insat, lightning, radar
+from . import gfs, gk2a, insat, lightning, radar
 from .tiles import CITIES, city_tile, latlon_to_pixel, make_tile
 
 
@@ -81,15 +82,18 @@ def run(args, gfs_fetch=None) -> dict:
         present = {}
 
         ir = np.zeros((t_in, 2, hr, hr), np.uint8)
-        if args.insat_dir:
+        frames, prov["satellite"] = None, {"status": "missing"}
+        if args.insat_dir:  # primary Indian source
             frames, p = insat.insat_frames(insat.find_scans(args.insat_dir), tile, t0, t_in, hr)
-            present["ir"] = frames is not None
-            if frames is not None:
-                ir = frames
             prov["satellite"] = {"source": "INSAT-3DR/3DS L1B (MOSDAC)", "status": "live" if frames is not None else "missing", "scans": p}
-        else:
-            present["ir"] = False
-            prov["satellite"] = {"status": "missing"}
+        if frames is None and getattr(args, "gk2a", False):  # open, no-login fallback
+            gk2a.download(t0, t_in, args.gk2a_dir)
+            frames, p = gk2a.gk2a_frames(gk2a.find_scans(args.gk2a_dir), tile, t0, t_in, hr)
+            prov["satellite"] = {"source": "GK2A AMI L1B (KMA, NOAA open data); stand-in until INSAT is connected",
+                                 "status": "live" if frames is not None else "missing", "scans": p}
+        present["ir"] = frames is not None
+        if frames is not None:
+            ir = frames
 
         vil = np.zeros((t_in, hr, hr), np.uint8)
         if args.radar_npz:
@@ -207,6 +211,8 @@ def main(argv=None):
     ap.add_argument("--lon", type=float)
     ap.add_argument("--time", required=True, help="issue time, UTC, ISO format")
     ap.add_argument("--insat-dir")
+    ap.add_argument("--gk2a", action="store_true", help="use GK2A (open, no login) when INSAT is not available")
+    ap.add_argument("--gk2a-dir", default="data/gk2a", help="download cache for GK2A scans")
     ap.add_argument("--radar-npz", help=".npz with dbz, lat, lon arrays (IMD DWR)")
     ap.add_argument("--lightning-csv")
     ap.add_argument("--tier1")

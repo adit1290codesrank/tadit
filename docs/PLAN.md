@@ -181,6 +181,7 @@ All lead times come out in one pass (SimVP-style), so the model is fast and comp
 | Leg | Indian source | Access | Status in the repo |
 |---|---|---|---|
 | Satellite | **INSAT-3DR / INSAT-3DS imager L1B** (MOSDAC) | Free MOSDAC registration, then order or download | `india/insat.py` reads TIR1/WV counts via the file's lookup tables, plus its lat/lon. Layout taken from satpy's `insat3d_img_l1b_h5` reader and fixture |
+| Satellite (open, now) | **GK2A AMI** (KMA, 128.2°E), NOAA open bucket `noaa-gk2a-pds`, 2023-02 onwards, every 10 min | **No login** | `india/gk2a.py`. WV069/IR105 are the same bands as GOES 6.9/10.3 µm. **Verified on real scans:** full coverage from Mumbai to Guwahati; navigation matches satpy's to 0.00 km |
 | Radar | **IMD DWR** (mausam.imd.gov.in images; volumes on request) | Public images; data on request | `india/radar.py`: dBZ + lat/lon → approximate VIL (Greene & Clark), flagged "approximate" |
 | Lightning | **IITM Indian Lightning Location Network (ILLN)**, IMD feed, ENTLN/GLD360 | ILLN on request; commercial | `india/lightning.py`: any strike CSV → model channel |
 | Lightning (open) | **NASA ISS-LIS** flashes | Free Earthdata login | `iss_lis_to_csv()`; usable for verification only, since it sees each point ~90 s per pass |
@@ -213,6 +214,7 @@ Tier 2 hides the same fields (`--gfs-p`).
 **Scoring on Indian-like inputs:** `evaluate.py --india-mode` and `extended eval --india-mode` score the models on INSAT-like + GFS-like inputs. `burst.sh eval` does this automatically, with and without radar and lightning.
 
 ### India forecast CLI (`python -m nowcast.india.run`)
+- `--gk2a` downloads GK2A scans automatically when INSAT is unavailable. A **real satellite + real GFS run** for Bhubaneswar (2024-05-10 09 UTC) took 61 s with no credentials.
 - Takes a city (20 built in, lightning hotspots first) or a lat/lon, plus an issue time.
 - Uses whichever of INSAT, IMD radar, lightning CSV and GFS are available.
 - Tier 1 covers hours 1–`switch_hour`; tier 2 covers the rest.

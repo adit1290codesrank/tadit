@@ -173,3 +173,43 @@ def test_iss_lis_to_csv(tmp_path):
     n = lightning.iss_lis_to_csv([str(p)], str(tmp_path / "lis.csv"))
     s = lightning.read_strikes(str(tmp_path / "lis.csv"))
     assert n == 1 and abs(int(s.t.iloc[0]) - int(t_unix)) <= 1
+
+
+def write_gk2a(folder, when: dt.datetime, n=550):
+    """Small fake GK2A full disk (real file attributes, 10x coarser grid) with a cold spot over Bhubaneswar."""
+    import h5py
+    import pyproj
+
+    attrs = dict(earth_equatorial_radius=6378137.0, earth_polar_radius=6356752.3, nominal_satellite_height=42164000.0,
+                 sub_longitude=np.deg2rad(128.2), cfac=20425338.90333935 / 10, lfac=-20425338.90333935 / 10,
+                 coff=n / 2 + 0.5, loff=n / 2 + 0.5, DN_to_Radiance_Gain=-0.0198197, DN_to_Radiance_Offset=161.58013916,
+                 Teff_to_Tbb_c0=-0.14286645, Teff_to_Tbb_c1=1.0006407, Teff_to_Tbb_c2=-5.50443295e-07,
+                 light_speed=2.99792458e08, Boltzmann_constant_k=1.3806488e-23, Plank_constant_h=6.62606957e-34)
+    h = attrs["nominal_satellite_height"] - attrs["earth_equatorial_radius"]
+    p = pyproj.Proj(f"+proj=geos +h={h} +lon_0=128.2 +a=6378137.0 +b=6356752.3 +sweep=y")
+    x, y = p(BBS[1], BBS[0])
+    col = int(np.rad2deg(x / h) * attrs["cfac"] / 2**16 + attrs["coff"] - 1)
+    row = int(np.rad2deg(y / h) * attrs["lfac"] / 2**16 + attrs["loff"] - 1)
+    for band in ("ir105", "wv069"):
+        dn = np.full((n, n), 5000, np.uint16)
+        dn[row - 2 : row + 3, col - 2 : col + 3] = 7500  # lower radiance (negative gain) -> colder
+        with h5py.File(os.path.join(folder, f"gk2a_ami_le1b_{band}_fd020ge_{when:%Y%m%d%H%M}.nc"), "w") as f:
+            f.attrs.update({k: np.array([v]) for k, v in attrs.items()})
+            d = f.create_dataset("image_pixel_values", data=dn)
+            d.attrs["number_of_valid_bits_per_pixel"] = np.array([13], np.uint8)
+
+
+def test_gk2a_reader_and_frames(tmp_path):
+    from nowcast.india import gk2a
+
+    t0 = dt.datetime(2024, 5, 10, 9, 0)
+    for m in (20, 10, 0):
+        write_gk2a(str(tmp_path), t0 - dt.timedelta(minutes=m))
+    scans = gk2a.find_scans(str(tmp_path))
+    assert len(scans) == 3
+    tile = city_tile("Bhubaneswar")
+    bt = gk2a.read_tile(scans[-1][1]["ir105"], 10.35, tile, 48)
+    assert np.isfinite(bt).all() and 180 < np.nanmin(bt) < bt[2, 2] < 330
+    assert bt[24, 24] < bt[2, 2] - 5  # the cold spot lands at the tile centre
+    frames, prov = gk2a.gk2a_frames(scans, tile, t0, 7, 48)
+    assert frames.shape == (7, 2, 48, 48) and len(prov) == 3
