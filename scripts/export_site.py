@@ -84,8 +84,10 @@ VIL_STOPS = [(16, (199, 233, 192)), (74, (65, 171, 93)), (133, (35, 139, 69)),
              (160, (254, 196, 79)), (181, (236, 112, 20)), (219, (153, 52, 4))]
 
 
-def colorize(x: np.ndarray, stops, alpha=(110, 220)) -> np.ndarray:
-    """Values -> RGBA with piecewise-linear colour between stops; below the first stop is transparent."""
+def colorize(x: np.ndarray, stops, alpha=(0, 220)) -> np.ndarray:
+    """Values -> RGBA with piecewise-linear colour between stops; below the first stop is transparent.
+    Opacity fades in from the first stop (square-root ease), so low values blend into the dark map
+    instead of ending in hard-edged holes."""
     x = np.nan_to_num(np.asarray(x, np.float32), nan=-1.0)
     v = np.array([s[0] for s in stops], np.float32)
     c = np.array([s[1] for s in stops], np.float32)
@@ -93,7 +95,7 @@ def colorize(x: np.ndarray, stops, alpha=(110, 220)) -> np.ndarray:
     for k in range(3):
         out[..., k] = np.interp(x, v, c[:, k]).astype(np.uint8)
     frac = np.clip((x - v[0]) / max(v[-1] - v[0], 1e-6), 0, 1)
-    out[..., 3] = np.where(x >= v[0], alpha[0] + (alpha[1] - alpha[0]) * frac, 0).astype(np.uint8)
+    out[..., 3] = np.where(x >= v[0], alpha[0] + (alpha[1] - alpha[0]) * np.sqrt(frac), 0).astype(np.uint8)
     return out
 
 

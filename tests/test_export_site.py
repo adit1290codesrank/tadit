@@ -77,8 +77,9 @@ def test_forecasts_without_maps_and_colour_ramp(tmp_path):
     assert len(m["forecasts"]) == 9 and not any(f["has_maps"] for f in m["forecasts"])  # 5 GK2A + 4 INSAT
     ids = {f["id"] for f in m["forecasts"]}
     assert "Kolkata_20240509T0600_insat" in ids and "Kolkata_20240509T0600" in ids
-    rgba = export_site.colorize(np.array([0.0, 0.04, 0.05, 0.5, 1.0]), export_site.LGHT_STOPS)
-    assert rgba[0, 3] == 0 and rgba[1, 3] == 0 and rgba[2, 3] > 0 and rgba[4, 3] >= rgba[3, 3]
+    rgba = export_site.colorize(np.array([0.0, 0.04, 0.1, 0.5, 1.0]), export_site.LGHT_STOPS)
+    assert rgba[0, 3] == 0 and rgba[1, 3] == 0 and rgba[2, 3] > 0  # transparent below 5 %, visible above
+    assert rgba[2, 3] < rgba[3, 3] <= rgba[4, 3]  # opacity fades in with probability: no hard-edged holes
 
 
 def test_switch_hour_rule():
