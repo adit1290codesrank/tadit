@@ -230,13 +230,7 @@ python scripts/export_site.py --results results --figures figures --cases site/c
 
 Run it on the server, where the India `.npz` map files exist, so map overlays are included. Re-run after every new India run.
 
-Deploy from the server (Cloudflare Pages, free):
-
-```bash
-cd site && npm run build && npx wrangler pages deploy dist --project-name <name>
-```
-
-Log in once first with `npx wrangler login`.
+To build and deploy the site (Cloudflare Pages, free), follow `docs/DEPLOY.md`.
 
 ### Step 13: Figures and slides (evening)
 

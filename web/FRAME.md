@@ -312,14 +312,12 @@ type CanvasProps = {
 - "Forecast my city": this would need a server job; out of scope (BRIEF §6).
 
 ## 12. Needed from others
-- **Main (pipeline owner):**
-  - **INSAT endpoint (§7).** In `export_site.py`, also read `results/india_insat/*.json` and write each one with `_insat` appended to the stem, along with its `_gk2a_check.json`.
-    - The web check did exactly this on scratch copies, and it works.
-  - **`site/cases.json`:**
-    - add `_insat` keys whose descriptions match INSAT's numbers; today's descriptions quote GK2A (e.g. Odisha "CSI 0.43");
-    - drop the internal note "Add the source for strike and casualty numbers…", which would show on the site.
-  - **`NaN` in exported JSON.** The Delhi storm check writes Python `NaN`, which is invalid JSON. The site tolerates it, but `json.dump(..., allow_nan=False)` after mapping NaN → `null` is cleaner.
-  - Run the export with `--boundary data/boundaries/india_states.geojson`. SITE_DATA.md still says "Bhuvan".
-  - **STEPS.md 12b deploy** becomes `cd web && npm ci && npm run build && npx wrangler pages deploy dist`.
+- **Main (pipeline owner):** everything the submission needs was done on 29 Sep (`e3873c7`, `4f2ff15`).
+  - [x] INSAT endpoint (§7): `export_site.py` exports `results/india_insat/` with the `_insat` suffix.
+  - [x] `site/cases.json`: `_insat` entries with INSAT's numbers; the internal "Add the source…" note is gone.
+  - [x] `NaN` is exported as `null`, with `allow_nan=False`.
+  - [x] SITE_DATA.md and `--boundary` help say Survey of India, not Bhuvan.
+  - [x] STEPS 12b points to `docs/DEPLOY.md` for the build and deploy.
+  - [ ] For scheduled live runs only (not the submission): default `kind` to `"run"` for forecasts missing from `cases.json`. See `docs/DEPLOY.md`.
 - **Design owner:** the brand name. "Nowcast" is a placeholder (`web/src/TopBar.tsx` `BRAND`).
 - **Team:** the credit line, and whether the repo link in the drawer should be public.

@@ -41,13 +41,7 @@ npm run preview   # serve dist/ locally
 
 ## Deploy
 
-`dist/` is a static folder with relative paths, so any static host works. For Cloudflare Pages:
-
-```sh
-cd web && npm ci && npm run build && npx wrangler pages deploy dist
-```
-
-Re-run the export before each build. The build copies whatever is in `site/public/` at that moment.
+`dist/` is a static folder with relative paths, so any static host works. `docs/DEPLOY.md` has the full steps, from running the model to publishing on Cloudflare Pages.
 
 ## INSAT forecasts
 
