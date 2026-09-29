@@ -5,8 +5,12 @@ outputs into static files. The site (Cloudflare Pages / Vercel) only reads those
 
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json \
-    --boundary data/boundaries/india_states.geojson --out site/public/data
+    --boundary data/boundaries/india_states.geojson \
+    --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv --out site/public/data
 ```
+
+`--observed` takes lightning flash lists (time, lat, lon), e.g. from `scripts/lmi_to_flashes.py`. They live on the server
+under `data/` (not in git). Without it, the export works and no forecast carries `observed`.
 
 - **Dependencies:** numpy + pyproj only; no GPU.
 - **Size:** re-running replaces `forecasts/`. The frozen results export to ~6.5 MB; each forecast with maps adds ~1–2 MB.
@@ -68,6 +72,16 @@ All paths inside the JSONs are relative to `data/`.
 
 **`storm_check`** (optional): the storm-location check against GK2A cold cloud tops.
 - Label it exactly as its `what` text says. **It's a storm proxy, not lightning verification.**
+
+**`lightning_check`** (optional): the forecast checked against real lightning (FY-4A LMI satellite lightning), from `<run>_ltg_check.json`.
+- `hours[]`: `{hour, status, cells_observed, strikes_within_16km, pod, far, csi, csi_20, persistence_csi}`.
+  - `csi`, `pod` and `far` count the forecast as "yes" at P >= 0.4; `csi_20` at P >= 0.2.
+  - `status: "no data"` means no lightning was recorded nearby, so the hour is not scored.
+
+**`observed`** (optional): where real lightning struck, to draw over the forecast.
+- `{source, steps: {"10": [[lon, lat], ...], ...}, hourly: {"1": [...], ...}}`.
+- A step covers the 10 minutes ending at that minute (first 3 h); an hour covers that lead hour.
+- The manifest entry has `has_observed: true` when present.
 
 **`overlays`**
 - `hourly{"1": png, ...}`: one map per lead hour.

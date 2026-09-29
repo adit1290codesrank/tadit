@@ -1,7 +1,7 @@
 import { addMin, hm, hourOf, overlayAt, pct, riskShort, utcToIst, type Forecast, type Hour, type Layer, type Status } from "./data";
 
 export const TABS = [
-  ["timeline", "Timeline"], ["curve", "Risk curve"], ["inputs", "Inputs"], ["check", "Storm check"],
+  ["timeline", "Timeline"], ["curve", "Risk curve"], ["inputs", "Inputs"], ["check", "Check"],
 ] as const;
 export type Tab = (typeof TABS)[number][0];
 
@@ -67,7 +67,7 @@ function HourCard({ h, on, onClick }: { h: Hour; on: boolean; onClick(): void })
 }
 
 function Detail(p: P & { cur: number }) {
-  const hasCheck = !!p.f.storm_check?.hours?.length;
+  const hasCheck = !!p.f.storm_check?.hours?.length || !!p.f.lightning_check?.hours?.length;
   const tabs = TABS.filter(([k]) => k !== "check" || hasCheck);
   return (
     <>
@@ -83,7 +83,8 @@ function Detail(p: P & { cur: number }) {
         {p.tab === "timeline" && <Timeline {...p} />}
         {p.tab === "curve" && <RiskCurve {...p} />}
         {p.tab === "inputs" && <Inputs {...p} />}
-        {p.tab === "check" && hasCheck && <StormCheck f={p.f} />}
+        {p.tab === "check" && p.f.lightning_check && <LightningCheck f={p.f} />}
+        {p.tab === "check" && !!p.f.storm_check?.hours?.length && <StormCheck f={p.f} />}
       </div>
     </>
   );
@@ -221,6 +222,31 @@ function nwpLine(f: Forecast) {
   const models = [...new Set(runs.map((r) => r.model.toUpperCase()))].join(", ");
   const ok = runs.filter((r) => r.status === "ok").length;
   return `${models} run from ${hm(utcToIst(runs[0].init))} IST, ${ok} of ${runs.length} hours received`;
+}
+
+function LightningCheck({ f }: { f: Forecast }) {
+  const c = f.lightning_check!;
+  const n = (v: number | null | undefined) => (v == null ? "n/a" : v.toFixed(2));
+  const src = (f.observed?.source ?? c.source ?? "observed lightning").replace(/ \(.*\)$/, "");
+  return (
+    <>
+      <p className="eyebrow">Checked against real lightning</p>
+      <p className="hint">Lightning seen by {src}. A 16 km square counts as struck if lightning hit it during the hour; CSI is shown with the forecast counted as a "yes" from 20 % (MODERATE on this site) and from 40 %. Persistence assumes the lightning at issue time stays where it is.</p>
+      <table className="table">
+        <thead><tr><th>Hour</th><th>Squares struck</th><th style={{ whiteSpace: "nowrap" }}>CSI ≥20%</th><th style={{ whiteSpace: "nowrap" }}>CSI ≥40%</th><th>Persistence</th></tr></thead>
+        <tbody>
+          {c.hours.map((h) =>
+            h.status !== "scored" ? (
+              <tr key={h.hour}><td>{h.hour}</td><td colSpan={4} className="mute">No lightning recorded nearby</td></tr>
+            ) : (
+              <tr key={h.hour}><td>{h.hour}</td><td>{h.cells_observed}</td><td>{n(h.csi_20)}</td><td>{n(h.csi)}</td><td>{n(h.persistence_csi)}</td></tr>
+            ),
+          )}
+        </tbody>
+      </table>
+      <p className="body-sm mute">White dots on the map show where this lightning struck, hour by hour. CSI 1 is perfect; a useful forecast beats persistence.</p>
+    </>
+  );
 }
 
 function StormCheck({ f }: { f: Forecast }) {

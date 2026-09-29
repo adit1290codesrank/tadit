@@ -67,8 +67,10 @@ Each run takes about 15 minutes, mostly downloading. Skip any case whose `.json`
 From the repo root, on the machine with the `.npz` files:
 
 ```bash
-python scripts/export_site.py --results results --cases site/cases.json \
-  --boundary data/boundaries/india_states.geojson --out site/public/data
+python scripts/export_site.py --results results --figures figures --cases site/cases.json \
+  --boundary data/boundaries/india_states.geojson \
+  --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv \
+  --out site/public/data
 ```
 
 It prints the number of forecasts and the size. Check that the forecasts now have maps:

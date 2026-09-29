@@ -5,7 +5,7 @@ import TimeBar from "./TimeBar";
 import RegionPanel, { TABS, type Tab } from "./RegionPanel";
 import AboutDrawer from "./AboutDrawer";
 import {
-  getJSON, groupRuns, positions, overlayAt, intensityAt, cssGradient, parseHash, toHash,
+  getJSON, groupRuns, positions, overlayAt, observedAt, intensityAt, cssGradient, parseHash, toHash,
   LGHT_STOPS, VIL_STOPS, type Forecast, type Manifest, type View, type Layer,
 } from "./data";
 
@@ -59,7 +59,7 @@ export default function App() {
   const pos = sel ? positions(sel) : [...new Set(loaded.flatMap(positions))].sort((a, b) => a - b);
   const t = view.t != null && pos.includes(view.t) ? view.t : pos[0] ?? 60;
   const layer: Layer = view.layer ?? "lightning";
-  const hasCheck = !!sel?.storm_check?.hours?.length;
+  const hasCheck = !!sel?.storm_check?.hours?.length || !!sel?.lightning_check?.hours?.length;
   const tab = ref && TABS.some(([k]) => k === view.tab) && (view.tab !== "check" || hasCheck) ? (view.tab as Tab) : null;
   const seam = manifest?.switch_hour != null && pos.some((m) => m > manifest.switch_hour! * 60) ? manifest.switch_hour * 60 : null;
 
@@ -69,6 +69,7 @@ export default function App() {
     return [{
       id: r.city, city: r.city, lat: x.lat, lon: x.lon, corners: x.tile.corners,
       intensity: (t: number) => intensityAt(x, t), overlay: (t: number, l: Layer) => overlayAt(x, t, l),
+      observed: (t: number) => observedAt(x, t),
     }];
   }), [run?.key, fcs]);
 
@@ -171,6 +172,9 @@ export default function App() {
                     : <><span>5%</span><span>20%</span><span>40%</span><span>60%</span><span>80%</span></>}
                 </div>
                 <p className="hint">{layer === "vil" ? "How strong the storm is in each 2 km square" : "Chance of lightning in each 16 km square"}</p>
+                {layer === "lightning" && sel?.observed && (
+                  <p className="obs-key"><span className="obs-dot" aria-hidden /> Real lightning that happened ({sel.observed.source.replace(/ \(flashes\)$/, "")})</p>
+                )}
               </div>
               {!ref && regions.length > 0 && (
                 <p className="canvas-hint hint">The glow shows where lightning is likely in the next 6 hours; brighter means more likely. Click a place for its hourly forecast.</p>

@@ -246,3 +246,7 @@ h1, h2, h3, p { margin: 0; font-weight: 400; }
   .round { min-width: 44px; }
   .status { padding: var(--sm) var(--lg); }
 }
+
+/* Observed lightning key: same white dot as the map layer. */
+.obs-key { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 14px; line-height: 20px; color: var(--mute); }
+.obs-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.2px #0a0a0a; flex: none; }

@@ -6,7 +6,7 @@ export type Layer = "lightning" | "vil";
 
 export type ManifestEntry = {
   id: string; city: string; lat: number; lon: number; title: string; kind: "case" | "run";
-  issue_ist: string; issue_utc: string; peak_risk: Risk | null; has_maps: boolean; file: string;
+  issue_ist: string; issue_utc: string; peak_risk: Risk | null; has_maps: boolean; has_observed?: boolean; file: string;
 };
 export type Manifest = {
   generated_utc: string; honest_label: string; switch_hour: number | null;
@@ -21,6 +21,10 @@ export type Step = { minutes: number; time_ist: string; p_location: number | nul
 export type CheckHour = {
   hour: number; p_city: number | null; coldest_city_c: number | null; deep_cells: number; fc_cells: number;
   hits: number; pod: number | null; far: number | null; csi: number | null;
+};
+export type LightningCheckHour = {
+  hour: number; status: "scored" | "no data"; cells_observed?: number; strikes_within_16km?: number;
+  pod?: number | null; far?: number | null; csi?: number | null; csi_20?: number | null; persistence_csi: number | null;
 };
 export type Forecast = {
   id: string; city: string; lat: number; lon: number; title: string; description: string; kind: "case" | "run";
@@ -37,6 +41,9 @@ export type Forecast = {
   honest_label: string;
   overlays: { hourly: Record<string, string>; steps: Step[] };
   storm_check?: { what: string; proxy: string; hours: CheckHour[] };
+  lightning_check?: { what: string; source: string; hours: LightningCheckHour[] };
+  // Observed lightning (e.g. FY-4A satellite flashes) as [lon, lat], per 10-min step (to 3 h) and per lead hour.
+  observed?: { source: string; steps: Record<string, [number, number][]>; hourly: Record<string, [number, number][]> };
 };
 
 // The exporter writes Python's NaN (storm check on a calm day), which is not valid JSON.
@@ -99,6 +106,13 @@ export function overlayAt(f: Forecast, t: number, layer: Layer): string | null {
   const step = t <= 180 ? f.overlays.steps.find((s) => s.minutes === t) : undefined;
   if (step) return step[layer] ?? null;
   return layer === "lightning" ? f.overlays.hourly[String(hourOf(t))] ?? null : null;
+}
+
+// Observed lightning to draw at cursor t: the 10-min window ending at t (first 3 h), then the whole lead hour.
+export function observedAt(f: Forecast, t: number): [number, number][] | null {
+  if (!f.observed) return null;
+  const step = t <= 180 ? f.observed.steps[String(t)] : undefined;
+  return step ?? f.observed.hourly[String(hourOf(t))] ?? null;
 }
 
 // How strongly a region is drawn: the strongest chance anywhere in its tile, that hour (same in both tiers).

@@ -42,5 +42,10 @@
     "title": "Bhubaneswar, 10 May 2024: a partial miss",
     "description": "A partial false alarm at the city (MODERATE, 42-44 % in hours 1-3); the observed storm sat about 157 km to the north. Shown on purpose: probabilities are calibrated to US storms and need Indian lightning data to recalibrate.",
     "kind": "case"
+  },
+  "Guwahati_20210416T1300_insat": {
+    "title": "Assam storms, 16 Apr 2021",
+    "description": "Issued at 18:30 IST, before the evening storms formed, on INSAT and GFS only (no radar or lightning feed). Checked against real FY-4A satellite lightning: the model beat persistence, and tier 2 gave MODERATE (36 %) for hour 6, the hour the storm reached Guwahati. Skill is modest (CSI about 0.2-0.3).",
+    "kind": "case"
   }
 }

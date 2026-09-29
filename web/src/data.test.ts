@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  groupRuns, positions, overlayAt, intensityAt, rampColor, parseJSON, parseHash, toHash, LGHT_STOPS,
+  groupRuns, positions, overlayAt, observedAt, intensityAt, rampColor, parseJSON, parseHash, toHash, LGHT_STOPS,
   type Forecast, type ManifestEntry,
 } from "./data.ts";
 
@@ -64,4 +64,15 @@ test("NaN from the exporter parses; hash round-trips", () => {
   const v = { run: "2024-05-09T06:00", r: "Kolkata", tab: "inputs", t: 120, layer: "vil" as const };
   assert.deepEqual(parseHash(toHash(v)), v);
   assert.deepEqual(parseHash(""), { run: undefined, r: undefined, tab: undefined, t: undefined, layer: undefined });
+});
+
+test("observed lightning: 10-min window up to 3 h, then the lead hour; none without data", () => {
+  const f = { ...fc([10, 20]), observed: {
+    source: "FY-4A", steps: { "10": [[85, 20]], "20": [] }, hourly: { "1": [[85, 20], [86, 21]], "4": [[87, 22]] } },
+  } as unknown as Forecast;
+  assert.deepEqual(observedAt(f, 10), [[85, 20]]);
+  assert.deepEqual(observedAt(f, 20), []);            // a quiet step stays empty, not the hour
+  assert.deepEqual(observedAt(f, 240), [[87, 22]]);   // after 3 h: the hour
+  assert.equal(observedAt(f, 300), null);             // hour 5 not in the record
+  assert.equal(observedAt(fc([10]), 10), null);       // forecast without observed data
 });

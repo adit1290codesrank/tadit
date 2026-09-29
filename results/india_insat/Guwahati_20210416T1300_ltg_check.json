@@ -1,0 +1,218 @@
+{
+ "city": "Guwahati",
+ "issue_utc": "2021-04-16T13:00:00",
+ "source": "FY-4A LMI (corrected events, TPDC)",
+ "what": "Forecast vs observed lightning: any strike in a 16 km cell during the lead hour",
+ "hours": [
+  {
+   "hour": 1,
+   "source": "tier1",
+   "strikes_region": 1262,
+   "status": "scored",
+   "strikes_tile": 171,
+   "cells_observed": 31,
+   "strikes_within_16km": 0,
+   "p_city": 0.348,
+   "p_max": 0.491,
+   "brier": 0.0531,
+   "scores": {
+    "0.2": {
+     "pod": 1.0,
+     "far": 0.841025641025641,
+     "csi": 0.15897435897435896
+    },
+    "0.3": {
+     "pod": 0.7741935483870968,
+     "far": 0.7209302325581395,
+     "csi": 0.25806451612903225
+    },
+    "0.4": {
+     "pod": 0.2903225806451613,
+     "far": 0.5714285714285714,
+     "csi": 0.20930232558139536
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 2,
+   "source": "tier1",
+   "strikes_region": 1377,
+   "status": "scored",
+   "strikes_tile": 179,
+   "cells_observed": 32,
+   "strikes_within_16km": 0,
+   "p_city": 0.364,
+   "p_max": 0.402,
+   "brier": 0.0474,
+   "scores": {
+    "0.2": {
+     "pod": 0.875,
+     "far": 0.7083333333333334,
+     "csi": 0.28
+    },
+    "0.3": {
+     "pod": 0.09375,
+     "far": 0.8695652173913043,
+     "csi": 0.057692307692307696
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 3,
+   "source": "tier1",
+   "strikes_region": 1614,
+   "status": "scored",
+   "strikes_tile": 259,
+   "cells_observed": 39,
+   "strikes_within_16km": 0,
+   "p_city": 0.251,
+   "p_max": 0.26,
+   "brier": 0.0573,
+   "scores": {
+    "0.2": {
+     "pod": 0.1794871794871795,
+     "far": 0.5882352941176471,
+     "csi": 0.14285714285714285
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 4,
+   "source": "tier2",
+   "strikes_region": 838,
+   "status": "scored",
+   "strikes_tile": 64,
+   "cells_observed": 15,
+   "strikes_within_16km": 0,
+   "p_city": 0.25,
+   "p_max": 0.315,
+   "brier": 0.0542,
+   "scores": {
+    "0.2": {
+     "pod": 1.0,
+     "far": 0.945054945054945,
+     "csi": 0.054945054945054944
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 5,
+   "source": "tier2",
+   "strikes_region": 3268,
+   "status": "scored",
+   "strikes_tile": 362,
+   "cells_observed": 50,
+   "strikes_within_16km": 0,
+   "p_city": 0.296,
+   "p_max": 0.378,
+   "brier": 0.0928,
+   "scores": {
+    "0.2": {
+     "pod": 0.74,
+     "far": 0.8582375478927203,
+     "csi": 0.13503649635036497
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 6,
+   "source": "tier2",
+   "strikes_region": 8209,
+   "status": "scored",
+   "strikes_tile": 3153,
+   "cells_observed": 135,
+   "strikes_within_16km": 90,
+   "p_city": 0.36,
+   "p_max": 0.389,
+   "brier": 0.1656,
+   "scores": {
+    "0.2": {
+     "pod": 0.6962962962962963,
+     "far": 0.6,
+     "csi": 0.34057971014492755
+    },
+    "0.3": {
+     "pod": 0.21481481481481482,
+     "far": 0.5671641791044776,
+     "csi": 0.1676300578034682
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  }
+ ]
+}

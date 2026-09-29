@@ -2,7 +2,7 @@
 // so a globe or another depiction can replace this file without touching anything else.
 import { useEffect, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
-import type { ImageSource } from "maplibre-gl";
+import type { GeoJSONSource, ImageSource } from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { LGHT_STOPS, rampColor, type Layer } from "./data";
 
@@ -11,6 +11,7 @@ export type Region = {
   corners: [number, number][];
   intensity: (t: number) => number;
   overlay: (t: number, layer: Layer) => string | null;
+  observed: (t: number) => [number, number][] | null; // real lightning for the cursor, drawn over the forecast
 };
 export type CanvasProps = {
   regions: Region[];
@@ -146,6 +147,24 @@ export default function Canvas(p: CanvasProps) {
         m.setLayoutProperty(`tile-${r.id}`, "visibility", on ? "visible" : "none");
       });
     }
+    // Observed lightning for the selected region, on top of everything.
+    const sel = p.regions.find((r) => r.id === p.selected);
+    const pts = sel && p.layer === "lightning" ? sel.observed(p.t) ?? [] : [];
+    whenReady((m) => {
+      const data: GeoJSON.FeatureCollection = {
+        type: "FeatureCollection",
+        features: pts.map((c) => ({ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: c } })),
+      };
+      const src = m.getSource("obs") as GeoJSONSource | undefined;
+      if (src) src.setData(data);
+      else {
+        m.addSource("obs", { type: "geojson", data });
+        m.addLayer({ id: "obs", type: "circle", source: "obs", paint: {
+          "circle-radius": 3.5, "circle-color": "#ffffff", "circle-opacity": 0.95,
+          "circle-stroke-color": "#0a0a0a", "circle-stroke-width": 1.2 } });
+      }
+      m.moveLayer("obs"); // region layers added later must not cover it
+    });
   }, [p.regions, p.t, p.layer, p.selected]);
 
   // Framing: India at L0, the tile at L1/L2.

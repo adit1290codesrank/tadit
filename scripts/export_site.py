@@ -206,7 +206,25 @@ def _num(v):
     return v
 
 
-def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "") -> dict | None:
+def observed_points(strikes, center, issue):
+    """Observed flashes inside the forecast tile: per 10-min step (0-3 h) and per lead hour (1-6).
+    Each window is (issue + start, issue + end]. None when the record has nothing in the whole 6 h."""
+    from nowcast.india.tiles import latlon_to_pixel, make_tile
+
+    t0 = int(issue.replace(tzinfo=dt.timezone.utc).timestamp())
+    s = strikes[(strikes.t > t0) & (strikes.t <= t0 + 6 * 3600)]
+    if len(s):
+        rr, cc = latlon_to_pixel(make_tile(*center), s.lat.to_numpy(), s.lon.to_numpy(), 24)
+        s = s[(rr >= 0) & (rr < 24) & (cc >= 0) & (cc < 24)]
+    if not len(s):
+        return None
+    pts = lambda w: [[round(float(a), 3), round(float(b), 3)] for a, b in zip(w.lon, w.lat)]
+    win = lambda a, b: s[(s.t > t0 + a) & (s.t <= t0 + b)]
+    return {"steps": {str(m): pts(win((m - 10) * 60, m * 60)) for m in range(10, 181, 10)},
+            "hourly": {str(h): pts(win((h - 1) * 3600, h * 3600)) for h in range(1, 7)}}
+
+
+def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "", observed=None) -> dict | None:
     from nowcast.india.tiles import CITIES
 
     fid = Path(json_path).stem + suffix
@@ -271,6 +289,24 @@ def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "")
             "hours": [{k: _num(v) for k, v in hh.items()} for hh in c.get("hours", [])],
         }
 
+    ltg_path = json_path[:-5] + "_ltg_check.json"
+    if os.path.exists(ltg_path):
+        c = json.load(open(ltg_path))
+        doc["lightning_check"] = {
+            "what": f"Forecast vs observed lightning ({c.get('source')}): any lightning in a 16 km cell during the hour",
+            "source": c.get("source"),
+            "hours": [{"hour": hh["hour"], "status": hh["status"], "cells_observed": hh.get("cells_observed"),
+                       "strikes_within_16km": hh.get("strikes_within_16km"),
+                       **({k: _num(v) for k, v in hh["scores"]["0.4"].items()} if "scores" in hh else {}),
+                       "csi_20": _num(hh["scores"]["0.2"]["csi"]) if "scores" in hh else None,
+                       "persistence_csi": _num(hh.get("persistence_csi"))} for hh in c.get("hours", [])],
+        }
+
+    if observed is not None:
+        pts = observed_points(observed[0], center, issue)
+        if pts:
+            doc["observed"] = {"source": observed[1], **pts}
+
     npz_path = json_path[:-5] + ".npz"
     if os.path.exists(npz_path):
         z = np.load(npz_path)
@@ -314,6 +350,8 @@ def main(argv=None) -> dict:
     ap.add_argument("--figures", help="folder of slide figures to publish too (optional)")
     ap.add_argument("--cases", help="JSON {forecast_id: {title, description, kind, hide}} (optional)")
     ap.add_argument("--boundary", help="India boundary GeoJSON, Survey of India (data/boundaries/india_states.geojson); never Natural Earth")
+    ap.add_argument("--observed", nargs="+", help="observed lightning to draw on the maps: flash/strike CSVs (time, lat, lon)")
+    ap.add_argument("--observed-source", default="FY-4A LMI satellite lightning (flashes)")
     ap.add_argument("--out", default="site/public/data")
     args = ap.parse_args(argv)
 
@@ -322,6 +360,12 @@ def main(argv=None) -> dict:
         shutil.rmtree(os.path.join(out, "forecasts"))  # no stale overlays from earlier exports
     os.makedirs(out, exist_ok=True)
     cases = json.load(open(args.cases)) if args.cases else {}
+    observed = None
+    if args.observed:
+        import pandas as pd
+
+        from nowcast.india.lightning import read_strikes
+        observed = (pd.concat([read_strikes(p) for p in args.observed], ignore_index=True), args.observed_source)
 
     scores = export_scores(args.results)
     with open(os.path.join(out, "scores.json"), "w") as f:
@@ -332,11 +376,12 @@ def main(argv=None) -> dict:
         for p in sorted(glob.glob(os.path.join(args.results, sub, "*.json"))):
             if p.endswith("_check.json"):  # _gk2a_check, _ltg_check: verification files, not forecasts
                 continue
-            d = export_forecast(p, out, cases, suffix)
+            d = export_forecast(p, out, cases, suffix, observed)
             if d:
                 forecasts.append({k: d[k] for k in ("id", "city", "lat", "lon", "title", "kind", "issue_ist",
                                                      "issue_utc", "peak_risk")}
                                  | {"has_maps": bool(d["overlays"]["hourly"] or d["overlays"]["steps"]),
+                                    "has_observed": "observed" in d,
                                     "file": f"forecasts/{d['id']}.json"})
 
     figures = []
