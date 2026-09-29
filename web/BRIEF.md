@@ -259,7 +259,6 @@ From `docs/PLAN.md` §5:
 
 ## 7. Open questions
 
-Audience, language, device and archived-versus-live are all settled in `web/FRAME.md`. One is still open:
-- **Framework and build** in `web/`, reading `site/public/data/`.
-  - `STEPS.md` step 12b still says `cd site && npm run build`.
-  - Changing that is main's call, so raise it with the pipeline owner.
+None. Audience, language, device and archived-versus-live are settled in `web/FRAME.md`.
+- **Build:** Vite + React + TS in `web/`, reading `site/public/data/` (FRAME §1).
+- **Still with main:** the deploy line in `STEPS.md` 12b (FRAME §12).

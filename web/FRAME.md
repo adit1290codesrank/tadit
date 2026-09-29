@@ -26,6 +26,11 @@ and how storms are drawn.
 | Device | Desktop first. Phones get a stacked fallback (§9). |
 | Onboarding | A one-line plain-English hint on each panel, plus an always-on legend. No walkthrough. |
 | Language | English only. The top bar keeps an empty slot for a language switch. |
+| Look (29 Sep) | `web/DESIGN.md`, applied strictly. Where it is silent, only the data ramps add colour. |
+| Build (29 Sep) | Vite + React + TS + `maplibre-gl` in `web/`. `publicDir` is `../site/public`, so the export ships at `/data`. |
+| Base map (29 Sep) | None. India is drawn only from the SoI states: `canvas-soft` fill, `canvas-mid` hairlines. |
+| Intensity look (29 Sep) | Glow + slow pulse at L0: colour from the lightning ramp at `p_tile_max`, with size, opacity and pulse rising with it. At L1 the glow stays inside the tile and gives way to the overlay where maps exist. |
+| INSAT endpoint (29 Sep) | The site defines it (§7) and main fills it. |
 
 ## 2. Scope change from BRIEF
 
@@ -253,10 +258,14 @@ type CanvasProps = {
 - a run change sets `regionId = null`, `level = 0`, `t` = initial, and `layer = "lightning"`;
 - a region change keeps `t` and `layer`.
 
-**Satellite variant:**
-- A pair is two forecasts with the same `city` and `issue_utc` but different satellite sources, with ids to be agreed with main (e.g. an `_insat` suffix).
-- The region uses the INSAT one, and the GK2A one feeds the `Inputs` cross-check line.
-- Until the export has INSAT, the region uses GK2A and the badge says so.
+**Satellite variant (the INSAT endpoint):**
+- **Files:** INSAT runs are exported as `forecasts/<City>_<YYYYmmddTHHMM>_insat.json`, with the same schema and a normal `manifest.forecasts[]` entry.
+- **Pairing:** entries with the same `city` and `issue_utc` form one region.
+  - The `_insat` one is primary.
+  - The other one feeds the `Inputs` cross-check: hourly p at the city, side by side.
+- **No `_insat` entry:** GK2A is primary, and its `inputs.satellite.source` says it is a stand-in.
+- **Title:** if the INSAT entry only has the auto title (`… IST`), the GK2A entry's title is used.
+- **Region id** in the state and URL is the `city`, so links survive the INSAT rollout.
 
 ## 8. Edge states
 
@@ -267,7 +276,7 @@ type CanvasProps = {
 | No `steps` | TimeBar, Risk curve | Hourly positions only. The curve uses hourly points. |
 | `t` > 180 with `layer = vil` | Timeline, Legend | Switch to lightning and say "Storm intensity is only available for the first 3 hours". |
 | Input `missing` / `partial` / `approximate` | Inputs | Neutral styling, not error red. The status word is always written out. |
-| Storm check NaN / `deep_cells == 0` | Storm check | "No deep convection observed", never 0 or NaN. |
+| Storm check NaN / `deep_cells == 0` | Storm check | "No storm clouds seen on satellite", never 0 or NaN. |
 | No `storm_check` | DetailTabs | Hide the tab. |
 | INSAT variant absent | Inputs, drawer | GK2A is primary and the badge says so. No cross-check line. |
 | `hours[]` shorter than 6 | HourCards, TimeBar | Render what exists. No empty or zero cards. |
@@ -304,8 +313,13 @@ type CanvasProps = {
 
 ## 12. Needed from others
 - **Main (pipeline owner):**
-  - export `results/india_insat/` with distinct ids;
-  - run the export with `--boundary data/boundaries/india_states.geojson`;
-  - decide STEPS.md 12b (the build lives in `web/`).
-- **Design owner:** brand name, visual direction, and the canvas depiction.
-- **Team:** credit line and repo link for the drawer.
+  - **INSAT endpoint (§7).** In `export_site.py`, also read `results/india_insat/*.json` and write each one with `_insat` appended to the stem, along with its `_gk2a_check.json`.
+    - The web check did exactly this on scratch copies, and it works.
+  - **`site/cases.json`:**
+    - add `_insat` keys whose descriptions match INSAT's numbers; today's descriptions quote GK2A (e.g. Odisha "CSI 0.43");
+    - drop the internal note "Add the source for strike and casualty numbers…", which would show on the site.
+  - **`NaN` in exported JSON.** The Delhi storm check writes Python `NaN`, which is invalid JSON. The site tolerates it, but `json.dump(..., allow_nan=False)` after mapping NaN → `null` is cleaner.
+  - Run the export with `--boundary data/boundaries/india_states.geojson`. SITE_DATA.md still says "Bhuvan".
+  - **STEPS.md 12b deploy** becomes `cd web && npm ci && npm run build && npx wrangler pages deploy dist`.
+- **Design owner:** the brand name. "Nowcast" is a placeholder (`web/src/TopBar.tsx` `BRAND`).
+- **Team:** the credit line, and whether the repo link in the drawer should be public.
