@@ -219,6 +219,25 @@ python -m nowcast.india.run --city Bhubaneswar --time 2024-05-10T09:00 --gk2a \
 
 ✅ `results/india/<city>_<time>.json` (hourly risk and data provenance) and `.npz` (maps).
 
+### Step 12b: Website data (server, 1 min per export)
+
+The website never runs the models. It reads static files exported from the pipeline outputs. The data format is in `docs/SITE_DATA.md`.
+
+```bash
+python scripts/export_site.py --results results --figures figures --cases site/cases.json --out site/public/data
+# add --boundary <ISRO Bhuvan India GeoJSON> for the map outline (never Natural Earth)
+```
+
+Run it on the server, where the India `.npz` map files exist, so map overlays are included. Re-run after every new India run.
+
+Deploy from the server (Cloudflare Pages, free):
+
+```bash
+cd site && npm run build && npx wrangler pages deploy dist --project-name <name>
+```
+
+Log in once first with `npx wrangler login`.
+
 ### Step 13: Figures and slides (evening)
 
 The figures to make:
