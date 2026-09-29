@@ -197,10 +197,17 @@ def _status(block) -> str:
     return (block or {}).get("status", "missing")
 
 
-def export_forecast(json_path: str, out_dir: str, cases: dict) -> dict | None:
+def _num(v):
+    """Round floats for the site; NaN (no deep cells) becomes null, which JSON can carry."""
+    if isinstance(v, float):
+        return None if v != v else round(v, 3)
+    return v
+
+
+def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "") -> dict | None:
     from nowcast.india.tiles import CITIES
 
-    fid = Path(json_path).stem
+    fid = Path(json_path).stem + suffix
     meta = cases.get(fid, {})
     if meta.get("hide"):
         return None
@@ -259,7 +266,7 @@ def export_forecast(json_path: str, out_dir: str, cases: dict) -> dict | None:
         doc["storm_check"] = {
             "what": "Storm-location check against satellite (GK2A cold cloud tops), a proxy for storms, not lightning",
             "proxy": c.get("proxy"),
-            "hours": [{k: (round(v, 3) if isinstance(v, float) else v) for k, v in hh.items()} for hh in c.get("hours", [])],
+            "hours": [{k: _num(v) for k, v in hh.items()} for hh in c.get("hours", [])],
         }
 
     npz_path = json_path[:-5] + ".npz"
@@ -293,7 +300,7 @@ def export_forecast(json_path: str, out_dir: str, cases: dict) -> dict | None:
 
     os.makedirs(os.path.join(out_dir, "forecasts"), exist_ok=True)
     with open(os.path.join(out_dir, "forecasts", f"{fid}.json"), "w") as f:
-        json.dump(doc, f, indent=1)
+        json.dump(doc, f, indent=1, allow_nan=False)
     return doc
 
 
@@ -304,7 +311,7 @@ def main(argv=None) -> dict:
     ap.add_argument("--results", default="results")
     ap.add_argument("--figures", help="folder of slide figures to publish too (optional)")
     ap.add_argument("--cases", help="JSON {forecast_id: {title, description, kind, hide}} (optional)")
-    ap.add_argument("--boundary", help="India boundary GeoJSON from ISRO Bhuvan (optional; never Natural Earth)")
+    ap.add_argument("--boundary", help="India boundary GeoJSON, Survey of India (data/boundaries/india_states.geojson); never Natural Earth")
     ap.add_argument("--out", default="site/public/data")
     args = ap.parse_args(argv)
 
@@ -316,18 +323,19 @@ def main(argv=None) -> dict:
 
     scores = export_scores(args.results)
     with open(os.path.join(out, "scores.json"), "w") as f:
-        json.dump(scores, f, indent=1)
+        json.dump(scores, f, indent=1, allow_nan=False)
 
     forecasts = []
-    for p in sorted(glob.glob(os.path.join(args.results, "india", "*.json"))):
-        if p.endswith("_gk2a_check.json"):
-            continue
-        d = export_forecast(p, out, cases)
-        if d:
-            forecasts.append({k: d[k] for k in ("id", "city", "lat", "lon", "title", "kind", "issue_ist",
-                                                 "issue_utc", "peak_risk")}
-                             | {"has_maps": bool(d["overlays"]["hourly"] or d["overlays"]["steps"]),
-                                "file": f"forecasts/{d['id']}.json"})
+    for sub, suffix in (("india", ""), ("india_insat", "_insat")):  # INSAT runs share stems with GK2A ones
+        for p in sorted(glob.glob(os.path.join(args.results, sub, "*.json"))):
+            if p.endswith("_gk2a_check.json"):
+                continue
+            d = export_forecast(p, out, cases, suffix)
+            if d:
+                forecasts.append({k: d[k] for k in ("id", "city", "lat", "lon", "title", "kind", "issue_ist",
+                                                     "issue_utc", "peak_risk")}
+                                 | {"has_maps": bool(d["overlays"]["hourly"] or d["overlays"]["steps"]),
+                                    "file": f"forecasts/{d['id']}.json"})
 
     figures = []
     if args.figures and os.path.isdir(args.figures):
@@ -354,7 +362,7 @@ def main(argv=None) -> dict:
         "forecasts": sorted(forecasts, key=lambda x: x["issue_utc"], reverse=True),
     }
     with open(os.path.join(out, "manifest.json"), "w") as f:
-        json.dump(manifest, f, indent=1)
+        json.dump(manifest, f, indent=1, allow_nan=False)
     size = sum(os.path.getsize(os.path.join(d, x)) for d, _, fs in os.walk(out) for x in fs)
     print(f"exported {len(forecasts)} forecasts, {len(scores['series'])} score series, "
           f"{len(figures)} figures -> {out} ({size / 1e6:.1f} MB)")

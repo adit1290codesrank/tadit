@@ -5,7 +5,7 @@ outputs into static files. The site (Cloudflare Pages / Vercel) only reads those
 
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json \
-    --out site/public/data          # add --boundary <Bhuvan GeoJSON> for the India outline
+    --boundary data/boundaries/india_states.geojson --out site/public/data
 ```
 
 - **Dependencies:** numpy + pyproj only; no GPU.
@@ -20,11 +20,12 @@ data/
   manifest.json                  entry point: lists everything below
   scores.json                    test-set skill (scorecard, per-10-min curves, ablations)
   forecasts/<id>.json            one India forecast (id = <City>_<YYYYmmddTHHMM> in UTC)
+  forecasts/<id>_insat.json      the same forecast run on INSAT (primary on the site)
   forecasts/<id>/hour<h>.png     lightning probability map for lead hour h (seamless tier1/tier2)
   forecasts/<id>/lght_<mmm>.png  tier-1 lightning probability, lead mmm minutes (010 ... 180)
   forecasts/<id>/vil_<mmm>.png   tier-1 storm intensity (VIL) at the same step
   figures/*.png                  slide figures (optional)
-  india_boundary.geojson         only if --boundary is given (must be ISRO Bhuvan / Survey of India)
+  india_boundary.geojson         only if --boundary is given (must be Survey of India)
 ```
 
 All paths inside the JSONs are relative to `data/`.
@@ -99,5 +100,5 @@ Put the same ramps in the map legend.
 1. Show `honest_label` on every forecast view, and `metric_note` under every score chart.
 2. Times are in IST, always with the issue time and the valid-until time.
 3. Show the input badges from `inputs.*.status`. A missing source is shown as missing, never hidden.
-4. For India maps, use Bhuvan / Survey of India boundaries. Never use Natural Earth or default OSM/Mapbox country borders.
+4. For India maps, use Survey of India boundaries. Never use Natural Earth or default OSM/Mapbox country borders.
 5. Label `storm_check` as a satellite storm proxy, not lightning.
