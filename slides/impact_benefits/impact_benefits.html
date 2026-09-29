@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Impact and Benefits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=block" rel="stylesheet">
+<style>
+  /* A4 landscape: 297 x 210 mm = 1123 x 794 CSS px */
+  @page { size: A4 landscape; margin: 0; }
+  :root {
+    --navy: #0B2545; --ink: #1B2533; --ink2: #3D4A5C; --muted: #6B7787;
+    --blue: #1565C0; --sky: #E8F1FB; --bolt: #FFB400; --saffron: #F37021;
+    --green: #138808; --red: #D62828; --teal: #0F8B8D; --violet: #5B3FA8;
+    --panel: #F5F8FC; --line: #D9E2EE;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1123px; height: 794px; background: #fff; }
+  body { font-family: Inter, "Segoe UI", sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  b { font-weight: 700; color: var(--ink); }
+  .slide { position: relative; width: 1123px; height: 794px; overflow: hidden;
+    background:
+      radial-gradient(900px 420px at 50% 42%, rgba(21,101,192,.05), transparent 70%),
+      #fff; }
+  .abs { position: absolute; }
+  svg.i { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- header ---------- */
+  .team { left: 18px; top: 12px; width: 170px; height: 58px; border: 2.5px solid #7B5EA7; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font: 700 17px Poppins; color: #2B2B2B; }
+  .title { left: 200px; right: 200px; top: 10px; text-align: center; font: 700 44px/1.3 "Times New Roman", Times, serif; letter-spacing: .5px; color: #111; }
+  .logo { right: 16px; top: 6px; width: 150px; }
+
+  /* ---------- hazard banner ---------- */
+  .banner { left: 16px; right: 16px; top: 84px; height: 46px; border-radius: 10px; display: flex; overflow: hidden;
+    box-shadow: 0 2px 6px rgba(11,37,69,.18); }
+  .banner .alert { flex: 1; background: linear-gradient(90deg, #7A0E12, var(--red)); color: #fff; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .banner .alert .ic { width: 30px; height: 30px; color: var(--bolt); flex: none; }
+  .banner .alert .big { font: 800 25px Poppins; color: #FFD166; white-space: nowrap; }
+  .banner .alert .txt { font-size: 12.5px; line-height: 1.3; }
+  .banner .alert .txt b { color: #fff; }
+  .banner .ps { width: 318px; font-size: 10px; background: var(--navy); color: #CFE0F5; padding: 0 14px; display: flex; flex-direction: column; justify-content: center; font-size: 10.5px; line-height: 1.35; }
+  .banner .ps .id { font: 700 13px Poppins; color: #fff; letter-spacing: .3px; }
+  .banner .ps .id span { color: var(--bolt); }
+
+  /* ---------- panels ---------- */
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+  .ph { position: absolute; left: 0; right: 0; top: 0; height: 32px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 700 16px Poppins; color: var(--navy); }
+  .ph .bar { width: 26px; height: 3px; border-radius: 2px; background: var(--saffron); }
+  .ph .bar.g { background: var(--green); }
+
+  /* stakeholder cards */
+  .sc { position: absolute; width: 208px; height: 114px; background: #fff; border-radius: 12px; border: 1px solid var(--line);
+    box-shadow: 0 2px 5px rgba(11,37,69,.07); padding: 9px 11px 8px; }
+  .sc.l { border-left: 4px solid var(--c); } .sc.r { border-right: 4px solid var(--c); }
+  .sc .hd { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .sc .bub { width: 30px; height: 30px; border-radius: 50%; background: var(--c); color: #fff; padding: 6px; flex: none; }
+  .sc .t { font: 700 12.8px/1.15 Poppins; color: var(--c); }
+  .sc .t small { display: block; font: 500 9.5px Inter; color: var(--muted); margin-top: 1px; }
+  .sc p { font-size: 10.9px; line-height: 1.38; color: var(--ink2); }
+
+  /* hub */
+  .hub { position: absolute; width: 176px; height: 176px; border-radius: 50%;
+    background: conic-gradient(from 200deg, rgba(21,101,192,0) 0deg, rgba(21,101,192,.08) 200deg, rgba(21,101,192,.55) 320deg, var(--blue) 360deg);
+    box-shadow: 0 6px 18px rgba(11,37,69,.22); }
+  .hub::before { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 21px, rgba(255,255,255,.55) 21px 22px); }
+  .hub .core { position: absolute; inset: 16px; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #173B6B, var(--navy) 70%);
+    border: 3px solid #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; }
+  .hub .core .bolt { width: 28px; height: 28px; color: var(--bolt); margin-bottom: 1px; }
+  .hub .core .h { font: 800 31px/1 Poppins; color: #fff; }
+  .hub .core .s { font: 600 10.5px/1.25 Poppins; color: #CFE0F5; margin-top: 3px; letter-spacing: .2px; }
+  .chips { position: absolute; display: grid; grid-template-columns: auto auto; justify-content: center; gap: 5px; }
+  .chip { display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 3px 7px 3px 4px;
+    font: 600 9.5px Inter; color: var(--navy); white-space: nowrap; }
+  .chip .d { width: 15px; height: 15px; border-radius: 50%; background: var(--c); color: #fff; padding: 2.5px; flex: none; }
+  .cap { position: absolute; text-align: center; font: 700 9px Inter; letter-spacing: 1.2px; color: var(--muted); }
+  .tiers { position: absolute; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+  .tier { font: 600 9.8px Inter; color: #fff; border-radius: 20px; padding: 3.5px 10px; white-space: nowrap; }
+
+  /* benefit cards */
+  .bc { position: absolute; left: 10px; right: 10px; height: 89px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    display: flex; overflow: hidden; box-shadow: 0 2px 5px rgba(11,37,69,.07); }
+  .bc .tag { width: 92px; flex: none; background: var(--c); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+  .bc .tag .ic { width: 30px; height: 30px; }
+  .bc .tag span { font: 700 11.5px Poppins; letter-spacing: .2px; }
+  .bc .body { position: relative; flex: 1; padding: 8px 14px 8px 22px; display: flex; align-items: center; font-size: 11.3px; line-height: 1.42; color: var(--ink2); }
+  .bc .body::before { content: "\201C"; position: absolute; left: 6px; top: -4px; font: 700 34px Georgia, serif; color: var(--c); opacity: .45; }
+
+  /* proof strip */
+  .proof { left: 16px; right: 16px; top: 568px; height: 124px; display: flex; gap: 8px; }
+  .plabel { width: 116px; flex: none; border-radius: 12px; background: var(--navy); color: #fff; padding: 12px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .plabel .k { font: 800 15px/1.15 Poppins; color: var(--bolt); }
+  .plabel .v { font-size: 9.8px; line-height: 1.35; color: #CFE0F5; margin-top: 6px; }
+  .kpi { width: 148px; flex: none; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 12px; padding: 8px 11px; }
+  .kpi .n { font: 800 27px/1.05 Poppins; color: var(--c); }
+  .kpi .n small { font-size: 13px; font-weight: 700; }
+  .kpi .l { font: 700 10.8px/1.25 Inter; color: var(--ink); margin-top: 3px; }
+  .kpi .d { font-size: 9.6px; line-height: 1.32; color: var(--muted); margin-top: 3px; }
+  .chart { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 6px 8px 2px; position: relative; }
+  .chart .ct { font: 700 10.5px Inter; color: var(--ink); }
+  .chart .ct span { font-weight: 500; color: var(--muted); }
+  .chart svg text { font-family: Inter, sans-serif; }
+
+  /* tagline + notes + footer */
+  .tagline { left: 16px; right: 16px; top: 699px; height: 32px; border-radius: 16px; background: linear-gradient(90deg, #FFF4E6, #fff 50%, #EAF6EC);
+    border: 1.5px solid #E7D3B8; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font: 700 15px "Times New Roman", Times, serif; color: #1B1B1B; font-style: italic; }
+  .tagline .ic { width: 18px; height: 18px; color: var(--saffron); }
+  .notes { left: 20px; right: 20px; top: 735px; font-size: 8.6px; line-height: 1.35; color: #7A8594; text-align: center; }
+  .footer { left: 0; right: 0; bottom: 0; height: 34px; background: #1F5FAE; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .footer .pg { position: absolute; right: 28px; font: 700 15px Inter; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- icon sprites (Lucide-style strokes) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+      <symbol id="cloudbolt" viewBox="0 0 24 24"><path d="M6 16.3A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><path d="m13 12-3 5h4l-3 5"/></symbol>
+      <symbol id="landmark" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+      <symbol id="shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4M12 16h.01"/></symbol>
+      <symbol id="sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+      <symbol id="plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol>
+      <symbol id="pole" viewBox="0 0 24 24"><path d="M12 2v20M2 5h20M3 3v2M7 3v2M17 3v2M21 3v2"/><path d="m19 5-7 7-7-7"/></symbol>
+      <symbol id="users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+      <symbol id="heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/><path d="M3.2 12h3.3l2-3 3 6 2-3h7.3"/></symbol>
+      <symbol id="rupee" viewBox="0 0 24 24"><path d="M6 3h12M6 8h12M6 13h3M9 13c6.7 0 6.7-10 0-10"/><path d="m6 13 8.5 8"/></symbol>
+      <symbol id="leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6 2.4-.5 4.9-2 5.9-3"/></symbol>
+      <symbol id="sat" viewBox="0 0 24 24"><path d="M13 7 9 3 5 7l4 4"/><path d="m17 11 4 4-4 4-4-4"/><path d="m8 12 4 4 6-6-4-4z"/><path d="m16 8 3-3"/><path d="M9 21a6 6 0 0 0-6-6"/></symbol>
+      <symbol id="radar" viewBox="0 0 24 24"><path d="M19.1 4.9A10 10 0 0 0 7 3.3"/><path d="M2.3 9.6A10 10 0 1 0 21.3 8.4"/><path d="M16.2 7.8A6 6 0 1 0 8.2 16.7"/><circle cx="12" cy="12" r="2"/><path d="m13.4 10.6 5.7-5.7"/></symbol>
+      <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></symbol>
+      <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+      <symbol id="gift" viewBox="0 0 24 24"><path d="M12 2 15 8.5 22 9.3 16.8 14 18.2 21 12 17.5 5.8 21 7.2 14 2 9.3 9 8.5z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ================= HEADER ================= -->
+  <div class="abs team" contenteditable="true">Team Name</div>
+  <div class="abs title">IMPACT AND BENEFITS</div>
+  <img class="abs logo" src="sih_logo.png" alt="Smart India Hackathon 2026">
+
+  <!-- ================= HAZARD BANNER ================= -->
+  <div class="abs banner">
+    <div class="alert">
+      <svg class="i ic"><use href="#zap"/></svg>
+      <div class="big">2,558 lives</div>
+      <div class="txt">lost to <b>lightning in India in 2023</b>: <b>39.7%</b> of all deaths from forces of nature, the largest single share.
+        Today's operational nowcasts look only <b>3 hours</b> ahead.</div>
+    </div>
+    <div class="ps">
+      <div class="id">PS <span>SIH26072</span> · MoES / IMD</div>
+      <div>AI/ML nowcasting of thunderstorms &amp; lightning from radar, satellite, lightning and NWP data</div>
+    </div>
+  </div>
+
+  <!-- ================= LEFT: TARGET AUDIENCE ================= -->
+  <div class="abs panel" id="left" style="left:16px; top:140px; width:636px; height:420px;">
+    <div class="ph"><span class="bar"></span>Potential Impact on Target Audience<span class="bar g"></span></div>
+
+    <svg id="wires" class="abs" style="left:0; top:0; width:636px; height:420px; overflow:visible"></svg>
+
+    <!-- left column -->
+    <div class="sc l" style="--c:#1565C0; left:12px; top:40px;" data-side="l">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#landmark"/></svg></div>
+        <div class="t">IMD Forecasters<small>MoES · forecast centres</small></div></div>
+      <p>Auto-updated <b>10-min, 2 km</b> storm and lightning maps. <b>Doubles the nowcast window</b> from 3 h to <b>6 h</b>.</p>
+    </div>
+    <div class="sc l" style="--c:#D62828; left:12px; top:163px;" data-side="l">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#shield"/></svg></div>
+        <div class="t">Disaster Managers<small>NDMA · SDMAs · districts</small></div></div>
+      <p><b>Earlier, district-level alerts</b> to clear fields, fairs, beaches and schools <b>before the first strike</b>.</p>
+    </div>
+    <div class="sc l" style="--c:#138808; left:12px; top:286px;" data-side="l">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#sprout"/></svg></div>
+        <div class="t">Farmers &amp; Labourers<small>most exposed, out in the open</small></div></div>
+      <p><b>Hours, not minutes</b>, to leave open fields and shelter livestock, via the <b>Damini</b> and <b>Meghdoot</b> apps.</p>
+    </div>
+
+    <!-- right column -->
+    <div class="sc r" style="--c:#5B3FA8; left:416px; top:40px;" data-side="r">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#plane"/></svg></div>
+        <div class="t">Aviation &amp; Airports<small>AAI · airlines · IAF</small></div></div>
+      <p>Convective hazard maps for <b>rerouting and safer ground operations</b>, with fewer diversions and go-arounds.</p>
+    </div>
+    <div class="sc r" style="--c:#F37021; left:416px; top:163px;" data-side="r">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#pole"/></svg></div>
+        <div class="t">Power &amp; Telecom<small>grid, towers, rail signalling</small></div></div>
+      <p><b>Pre-position repair crews</b> and protect lines, towers and signalling ahead of <b>lightning and squalls</b>.</p>
+    </div>
+    <div class="sc r" style="--c:#0F8B8D; left:416px; top:286px;" data-side="r">
+      <div class="hd"><div class="bub"><svg class="i"><use href="#users"/></svg></div>
+        <div class="t">Citizens &amp; Cities<small>hyper-local alerts</small></div></div>
+      <p>"Storm in the next hour" alerts for your area. <b>Tested on Bhubaneswar, Kolkata and Delhi storms.</b></p>
+    </div>
+
+    <!-- hub -->
+    <div class="cap" style="left:220px; width:196px; top:42px;">4 DATA SOURCES</div>
+    <div class="chips" style="left:240px; width:156px; top:58px;">
+      <div class="chip" style="--c:#1565C0"><span class="d"><svg class="i"><use href="#radar"/></svg></span>Radar</div>
+      <div class="chip" style="--c:#5B3FA8"><span class="d"><svg class="i"><use href="#sat"/></svg></span>Satellite</div>
+      <div class="chip" style="--c:#E3A000"><span class="d"><svg class="i"><use href="#zap"/></svg></span>Lightning</div>
+      <div class="chip" style="--c:#138808"><span class="d"><svg class="i"><use href="#globe"/></svg></span>NWP</div>
+    </div>
+    <div class="hub" id="hub" style="left:230px; top:132px;">
+      <div class="core">
+        <svg class="i bolt"><use href="#cloudbolt"/></svg>
+        <div class="h">0–6 h</div>
+        <div class="s">seamless AI<br>lightning nowcast</div>
+      </div>
+    </div>
+    <div class="tiers" style="left:220px; width:196px; top:318px;">
+      <div class="tier" style="background:#1565C0">Tier 1 · 0–3 h multimodal fusion</div>
+      <div class="tier" style="background:#0F8B8D">Tier 2 · 3–6 h AI-corrected NWP</div>
+      <div class="cap" style="position:static; margin-top:2px; letter-spacing:.4px; font-weight:600; font-size:9.3px;">updates every 10 min · 2 km radar grid</div>
+    </div>
+  </div>
+
+  <!-- ================= RIGHT: BENEFITS ================= -->
+  <div class="abs panel" style="left:664px; top:140px; width:443px; height:420px;">
+    <div class="ph"><span class="bar g"></span>Benefits of the Solution<span class="bar"></span></div>
+
+    <div class="bc" style="--c:#D62828; top:38px;">
+      <div class="tag"><svg class="i ic"><use href="#heart"/></svg><span>Social</span></div>
+      <div class="body"><div><b>Saves lives</b> where lightning strikes hardest: <b>MP, Bihar, Odisha, UP and Jharkhand</b> account for <b>59%</b> of India's lightning deaths. Clear, timely alerts build <b>public trust in IMD warnings</b>.</div></div>
+    </div>
+    <div class="bc" style="--c:#E08A00; top:133px;">
+      <div class="tag"><svg class="i ic"><use href="#rupee"/></svg><span>Economic</span></div>
+      <div class="body"><div>Cuts losses to <b>crops, livestock, flights and power grids</b>. Built on <b>existing and open data</b> (IMD radar, INSAT, GFS), so <b>no new sensors</b> are needed; the model runs on a <b>single GPU</b>.</div></div>
+    </div>
+    <div class="bc" style="--c:#138808; top:228px;">
+      <div class="tag"><svg class="i ic"><use href="#leaf"/></svg><span>Environmental</span></div>
+      <div class="body"><div>Early warning of <b>lightning-prone zones for forest-fire watch</b>. Supports <b>climate adaptation</b> as severe convective weather grows, and helps <b>solar and grid operators</b> plan for storms.</div></div>
+    </div>
+    <div class="bc" style="--c:#1565C0; top:323px;">
+      <div class="tag"><svg class="i ic"><use href="#sat"/></svg><span>Strategic</span></div>
+      <div class="body"><div><b>Atmanirbhar:</b> runs on India's own <b>INSAT-3DR/3DS</b> satellites and GFS. <b>Keeps forecasting when radar or lightning feeds drop out</b>, so it can cover districts <b>beyond radar range</b>.</div></div>
+    </div>
+  </div>
+
+  <!-- ================= PROOF STRIP ================= -->
+  <div class="abs proof">
+    <div class="plabel">
+      <div class="k">Measured,<br>not claimed</div>
+      <div class="v">Held-out 2019 storms scored against real satellite lightning (GLM).</div>
+    </div>
+    <div class="kpi" style="--c:#1565C0">
+      <div class="n">1.8×</div>
+      <div class="l">better than persistence at hour 1</div>
+      <div class="d">Lightning CSI 0.613 vs 0.341; the gap widens to 5.5× by hour 3</div>
+    </div>
+    <div class="kpi" style="--c:#E08A00">
+      <div class="n">+70%</div>
+      <div class="l">over raw NWP lightning at hour 6</div>
+      <div class="d">CSI 0.297 vs 0.175, and it leads NWP at every hour from 1 to 6</div>
+    </div>
+    <div class="kpi" style="--c:#138808">
+      <div class="n">0.461</div>
+      <div class="l">hour-1 CSI with no radar</div>
+      <div class="d">Satellite + NWP only, the usual case outside Indian radar coverage</div>
+    </div>
+    <div class="kpi" style="--c:#D62828">
+      <div class="n" style="font-size:23px">0.71<small style="font-size:11px"> vs </small>0.04</div>
+      <div class="l">India: storm vs dry day</div>
+      <div class="d">Storm probability 1 h ahead: Bhubaneswar outbreak (2 Sep 2023) vs Delhi dry day</div>
+    </div>
+    <div class="chart">
+      <div class="ct">Lightning CSI by lead hour <span>(higher is better)</span></div>
+      <svg id="chart" width="314" height="100" viewBox="0 0 314 100"></svg>
+    </div>
+  </div>
+
+  <!-- ================= TAGLINE / NOTES / FOOTER ================= -->
+  <div class="abs tagline">
+    <svg class="i ic"><use href="#zap"/></svg>
+    “From a 3-hour to a 6-hour lightning warning: one seamless AI nowcast, built on India’s own satellites.”
+    <svg class="i ic" style="color:var(--green)"><use href="#zap"/></svg>
+  </div>
+  <div class="abs notes">
+    CSI = critical success index for lightning in a 16 km cell during each lead hour; Tier 1 is used for hours 1–3 and Tier 2 for hours 4–6. India probabilities from GK2A satellite + GFS input, no radar.
+    Trained on US GLM lightning, adapted to INSAT/GFS, not yet verified against Indian lightning observations. Death figures: NCRB, Accidental Deaths &amp; Suicides in India 2023.
+  </div>
+  <div class="abs footer">@SIH Idea submission- Template<span class="pg">5</span></div>
+</div>
+
+<script>
+// ---- connector wires from hub to stakeholder cards ----
+(function () {
+  const svg = document.getElementById('wires');
+  const NS = 'http://www.w3.org/2000/svg';
+  const cx = 230 + 88, cy = 132 + 88, r = 90;
+  document.querySelectorAll('#left .sc').forEach(card => {
+    const x = card.offsetLeft, y = card.offsetTop, w = card.offsetWidth, h = card.offsetHeight;
+    const col = getComputedStyle(card).getPropertyValue('--c').trim();
+    const ex = card.dataset.side === 'l' ? x + w : x;   // card edge facing the hub
+    const ey = y + h / 2;
+    const midx = card.dataset.side === 'l' ? ex + 14 : ex - 14;
+    // hub point: aim at the elbow, land on the ring
+    const a = Math.atan2(ey - cy, midx - cx);
+    const hx = cx + r * Math.cos(a), hy = cy + r * Math.sin(a);
+    const mid = Math.abs(ey - cy) < 20;
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', mid ? `M${ex},${ey} L${hx},${ey}` : `M${ex},${ey} H${midx} L${hx},${hy}`);
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', col);
+    p.setAttribute('stroke-width', '2'); p.setAttribute('stroke-dasharray', '1 0');
+    svg.appendChild(p);
+    (mid ? [[ex, ey]] : [[ex, ey], [hx, hy]]).forEach(([px, py], i) => {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', px); c.setAttribute('cy', py); c.setAttribute('r', i ? 4 : 4.5);
+      c.setAttribute('fill', '#fff'); c.setAttribute('stroke', col); c.setAttribute('stroke-width', '2.2');
+      svg.appendChild(c);
+    });
+  });
+})();
+
+// ---- CSI vs lead hour chart (results/RESULTS.md, frozen 29 Sep 2026) ----
+(function () {
+  const svg = document.getElementById('chart');
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 314, H = 100, L = 26, R = 92, T = 8, B = 16;
+  const x = h => L + (h - 1) * (W - L - R) / 5;
+  const y = v => T + (1 - v / 0.7) * (H - T - B);
+  const el = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; };
+
+  // tier bands
+  el('rect', { x: L - 8, y: T - 4, width: x(3.5) - L + 8, height: H - T - B + 4, fill: '#E8F1FB', rx: 4 });
+  el('rect', { x: x(3.5), y: T - 4, width: x(6) + 8 - x(3.5), height: H - T - B + 4, fill: '#E6F4F4', rx: 4 });
+  el('text', { x: L - 4, y: T + 5, 'font-size': 7.5, fill: '#1565C0', 'font-weight': 700 }, 'TIER 1');
+  el('text', { x: x(3.5) + 4, y: T + 5, 'font-size': 7.5, fill: '#0F8B8D', 'font-weight': 700 }, 'TIER 2');
+  // grid + axes
+  [0, 0.2, 0.4, 0.6].forEach(v => {
+    el('line', { x1: L - 8, x2: x(6) + 8, y1: y(v), y2: y(v), stroke: '#D5DCE5', 'stroke-width': v ? 0.6 : 1 });
+    el('text', { x: L - 11, y: y(v) + 3, 'font-size': 7.5, fill: '#6B7787', 'text-anchor': 'end' }, v.toFixed(1));
+  });
+  [1, 2, 3, 4, 5, 6].forEach(h => el('text', { x: x(h), y: H - 5, 'font-size': 7.5, fill: '#6B7787', 'text-anchor': 'middle' }, h + ' h'));
+
+  const series = [
+    { name: 'Persistence', v: [0.341, 0.133, 0.080], c: '#8A96A3', dash: '3 2.5', w: 1.6 },
+    { name: 'Raw NWP (HRRR)', v: [0.266, 0.222, 0.197, 0.186, 0.181, 0.175], c: '#E8710A', w: 2 },
+    { name: 'Our nowcast', v: [0.613, 0.497, 0.440, 0.319, 0.305, 0.297], c: '#1565C0', w: 2.6 },
+  ];
+  series.forEach(s => {
+    el('polyline', { points: s.v.map((v, i) => `${x(i + 1)},${y(v)}`).join(' '), fill: 'none', stroke: s.c, 'stroke-width': s.w, 'stroke-dasharray': s.dash || '', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    s.v.forEach((v, i) => el('circle', { cx: x(i + 1), cy: y(v), r: s.name === 'Our nowcast' ? 3 : 2.3, fill: s.c, stroke: '#fff', 'stroke-width': 1.2 }));
+  });
+  // direct labels at line ends (text in ink, colored key mark beside it)
+  const lab = (px, py, c, t1, t2, dash) => {
+    el('line', { x1: px, x2: px + 10, y1: py, y2: py, stroke: c, 'stroke-width': 2.2, 'stroke-dasharray': dash || '' });
+    el('text', { x: px + 13, y: py + 3, 'font-size': 8, fill: '#1B2533', 'font-weight': 700 }, t1);
+    if (t2) el('text', { x: px + 13, y: py + 12, 'font-size': 7.3, fill: '#6B7787' }, t2);
+  };
+  lab(x(6) + 10, y(0.297) - 12, '#1565C0', 'Our nowcast', '0.297 at 6 h');
+  lab(x(6) + 10, y(0.175) + 6, '#E8710A', 'Raw NWP', '0.175 at 6 h');
+  lab(x(3) + 8, y(0.08) + 1, '#8A96A3', 'Persistence', null, '3 2.5');
+})();
+</script>
+</body>
+</html>

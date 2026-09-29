@@ -24,3 +24,9 @@ site/node_modules/
 
 # presentation exports (shared outside git)
 *.pdf
+Idea1.pdf
+Idea2.pdf
+Idea3.pdf
+Idea4.pdf
+site-data.tar.gz
+!slides/impact_benefits/impact_benefits.pdf
