@@ -193,7 +193,7 @@ h1, h2, h3, p { margin: 0; font-weight: 400; }
 /* ex-data-table-cell */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
 .table th { background: var(--canvas-soft); font: 400 12px/16px var(--mono); letter-spacing: 1.2px; text-transform: uppercase; color: var(--body); text-align: right; }
-.table th, .table td { padding: var(--sm) var(--md); border-bottom: 1px solid var(--hairline); text-align: right; }
+.table th, .table td { padding: var(--sm); border-bottom: 1px solid var(--hairline); text-align: right; }
 .table th:first-child, .table td:first-child { text-align: left; }
 
 .curve { width: 100%; height: auto; display: block; overflow: visible; }
