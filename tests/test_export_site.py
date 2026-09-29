@@ -71,7 +71,9 @@ def test_export_real_results_with_maps(tmp_path):
 
 
 def test_forecasts_without_maps_and_colour_ramp(tmp_path):
-    m = export_site.main(["--results", str(ROOT / "results"), "--out", str(tmp_path / "site")])
+    res = tmp_path / "results"  # a copy without the .npz maps, which exist wherever the pipeline has run
+    shutil.copytree(ROOT / "results", res, ignore=shutil.ignore_patterns("*.npz"))
+    m = export_site.main(["--results", str(res), "--out", str(tmp_path / "site")])
     assert len(m["forecasts"]) == 5 and not any(f["has_maps"] for f in m["forecasts"])
     rgba = export_site.colorize(np.array([0.0, 0.04, 0.05, 0.5, 1.0]), export_site.LGHT_STOPS)
     assert rgba[0, 3] == 0 and rgba[1, 3] == 0 and rgba[2, 3] > 0 and rgba[4, 3] >= rgba[3, 3]
