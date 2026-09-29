@@ -1,12 +1,22 @@
 {
   "Bhubaneswar_20230902T0800": {
     "title": "Odisha lightning outbreak, 2 Sep 2023",
-    "description": "Severe lightning day over Odisha. Forecast: HIGH at Bhubaneswar for hours 1-2. Satellite storm-location check (GK2A): CSI 0.43 in hour 1. Add the source for strike and casualty numbers before publishing any.",
+    "description": "Severe lightning day over Odisha. Forecast: HIGH at Bhubaneswar for hours 1-2. Satellite storm-location check (GK2A): CSI 0.43 in hour 1.",
+    "kind": "case"
+  },
+  "Bhubaneswar_20230902T0800_insat": {
+    "title": "Odisha lightning outbreak, 2 Sep 2023",
+    "description": "Severe lightning day over Odisha. Forecast: HIGH at Bhubaneswar in hour 2 (63 %), MODERATE in hours 1 and 3. Satellite storm-location check: CSI 0.47 in hour 1.",
     "kind": "case"
   },
   "Kolkata_20240509T0600": {
     "title": "Kolkata hailstorm, 9 May 2024",
     "description": "Forecast issued before the storm reached the city: HIGH at Kolkata about an hour ahead.",
+    "kind": "case"
+  },
+  "Kolkata_20240509T0600_insat": {
+    "title": "Kolkata hailstorm, 9 May 2024",
+    "description": "Forecast issued before the storm reached the city: HIGH at Kolkata about an hour ahead (57 % in hour 1, 69 % in hour 2).",
     "kind": "case"
   },
   "Kolkata_20240509T0800": {
@@ -18,9 +28,19 @@
     "description": "Hot, dry day: the forecast stays LOW everywhere, as it should. Shows the model does not cry wolf.",
     "kind": "case"
   },
+  "Delhi_20240528T0800_insat": {
+    "title": "Delhi heatwave control, 28 May 2024",
+    "description": "Hot, dry day: the forecast stays LOW everywhere, as it should. Shows the model does not cry wolf.",
+    "kind": "case"
+  },
   "Bhubaneswar_20240510T0900": {
     "title": "Bhubaneswar, 10 May 2024: a partial miss",
     "description": "A partial false alarm at the city; the storm it forecast formed about 157 km to the north. Shown on purpose: probabilities are calibrated to US storms and need Indian lightning data to recalibrate.",
+    "kind": "case"
+  },
+  "Bhubaneswar_20240510T0900_insat": {
+    "title": "Bhubaneswar, 10 May 2024: a partial miss",
+    "description": "A partial false alarm at the city (MODERATE, 42-44 % in hours 1-3); the observed storm sat about 157 km to the north. Shown on purpose: probabilities are calibrated to US storms and need Indian lightning data to recalibrate.",
     "kind": "case"
   }
 }
