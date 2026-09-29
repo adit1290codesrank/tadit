@@ -21,3 +21,6 @@ data/
 site/public/data/
 site/dist/
 site/node_modules/
+
+# presentation exports (shared outside git)
+*.pdf
