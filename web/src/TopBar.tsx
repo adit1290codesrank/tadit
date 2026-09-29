@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dayHm, hm, riskShort, type Run } from "./data";
 
-export const BRAND = "Nowcast"; // placeholder until the brand is decided (FRAME §12)
+export const BRAND = "Tadit"; // तड़ित, lightning
 
 export default function TopBar(p: {
   runs: Run[]; run: Run | null; validUntil: string | null; onRun(key: string): void; onAbout(): void;

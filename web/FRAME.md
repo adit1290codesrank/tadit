@@ -137,7 +137,7 @@ Esc or ← goes back one level. Switching runs always returns to L0.
 Each slot lists what it reads, its hint text, and how it behaves at each level. The hints are draft copy; the design owner may reword them, but every panel keeps one.
 
 ### `TopBar`
-- **Brand:** name and mark are still to be decided.
+- **Brand:** the name is **Tadit** (तड़ित, lightning), decided 29 Sep. The mark is still to be decided.
 - **`RunPicker`:**
   - The label is `Issued <issue_ist as "DD Mon YYYY, HH:MM"> IST ▾`, with `Valid until <valid_until_ist HH:MM> IST` beneath it.
   - The list comes from `manifest.forecasts[]` grouped by `issue_utc`, newest first. Each row shows the date and time, the region names, and the highest `peak_risk` in the run as a chip.
@@ -319,5 +319,5 @@ type CanvasProps = {
   - [x] SITE_DATA.md and `--boundary` help say Survey of India, not Bhuvan.
   - [x] STEPS 12b points to `docs/DEPLOY.md` for the build and deploy.
   - [ ] For scheduled live runs only (not the submission): default `kind` to `"run"` for forecasts missing from `cases.json`. See `docs/DEPLOY.md`.
-- **Design owner:** the brand name. "Nowcast" is a placeholder (`web/src/TopBar.tsx` `BRAND`).
+- **Design owner:** [x] the brand name: Tadit (`web/src/TopBar.tsx` `BRAND`). The mark is still open.
 - **Team:** the credit line, and whether the repo link in the drawer should be public.

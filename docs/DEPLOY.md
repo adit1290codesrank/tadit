@@ -44,7 +44,7 @@ npx wrangler login                                  # opens a browser to sign in
 npx wrangler pages project create <name> --production-branch main
 ```
 
-`<name>` becomes `<name>.pages.dev`.
+`<name>` becomes `<name>.pages.dev`. The site is called Tadit, so use `tadit`, or `tadit-<something>` if that name is taken.
 
 ### 1. Run the cases on the GPU machine
 
@@ -118,6 +118,21 @@ Vercel works the same way, since `dist/` needs no server config: `npx vercel dep
 Any change to the data means export, build, then deploy again. Each deploy replaces the whole site at once, so visitors never see a mix of old and new files.
 
 Every deployment stays in the Cloudflare dashboard (Workers & Pages → the project → Deployments), and any of them can be restored with one click.
+
+## Branches: how a change reaches the live site
+
+Always deploy from main (`main`). The deploy command's `--branch main` names the Cloudflare production branch, not the git branch, but the code you build should still be main's.
+
+`romir-deploy` holds the deployment work: this guide, the STEPS 12b fix, and the site's name. It exists until the first real deploy has shown whether this guide is right.
+
+1. **Change.** Commit site or deploy-doc fixes on `romir-deploy`. Web code stays in `web/`; main-owned files change only with their owner's OK.
+2. **Catch up.** If main has moved, merge main into `romir-deploy` (`git merge origin/main`). Merging avoids a force-push.
+3. **Land.** Fast-forward main to `romir-deploy` and push. Main's owner is told first when main-owned files changed.
+4. **Deploy** from main on the GPU machine, following the steps above.
+5. **Fix and repeat.** Anything the deploy got wrong goes back to step 1.
+6. **Close.** After a clean deploy, delete `romir-deploy` locally and on GitHub. Later web changes go on a new branch cut from main.
+
+**The name.** The site is called Tadit (तड़ित, lightning), which replaced the placeholder "Nowcast". The rename is a `romir-deploy` commit covering `BRAND` in `web/src/TopBar.tsx`, the page title in `web/index.html`, the package name `tadit-web` and the web README. It has to reach main (step 3) before the first deploy, so the site goes live as Tadit on `tadit.pages.dev`. Renaming the Cloudflare project later would change the URL, so the name is settled before the project is created.
 
 ## Later: scheduled runs
 

@@ -1,6 +1,6 @@
-# Forecast viewer
+# Tadit
 
-The public site for the India nowcasts. It's a static Vite + React + TypeScript app with MapLibre. It reads the JSON and PNG files that `scripts/export_site.py` writes (see `docs/SITE_DATA.md`). No forecast data is committed here.
+Tadit (तड़ित, lightning) is the public site for the India nowcasts. It's a static Vite + React + TypeScript app with MapLibre. It reads the JSON and PNG files that `scripts/export_site.py` writes (see `docs/SITE_DATA.md`). No forecast data is committed here.
 
 `BRIEF.md` says what the site is for, `FRAME.md` fixes its structure and `DESIGN.md` fixes its look.
 
