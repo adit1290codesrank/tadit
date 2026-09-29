@@ -1,0 +1,218 @@
+{
+ "city": "Bhubaneswar",
+ "issue_utc": "2023-09-02T08:00:00",
+ "source": "FY-4A LMI (corrected events, TPDC)",
+ "what": "Forecast vs observed lightning: any strike in a 16 km cell during the lead hour",
+ "hours": [
+  {
+   "hour": 1,
+   "source": "tier1",
+   "strikes_region": 1054,
+   "status": "scored",
+   "strikes_tile": 528,
+   "cells_observed": 62,
+   "strikes_within_16km": 0,
+   "p_city": 0.708,
+   "p_max": 0.747,
+   "brier": 0.1051,
+   "scores": {
+    "0.2": {
+     "pod": 1.0,
+     "far": 0.8019169329073482,
+     "csi": 0.19808306709265175
+    },
+    "0.3": {
+     "pod": 1.0,
+     "far": 0.7304347826086957,
+     "csi": 0.26956521739130435
+    },
+    "0.4": {
+     "pod": 0.5645161290322581,
+     "far": 0.7033898305084746,
+     "csi": 0.2413793103448276
+    },
+    "0.5": {
+     "pod": 0.27419354838709675,
+     "far": 0.7213114754098361,
+     "csi": 0.16037735849056603
+    }
+   },
+   "persistence_csi": 0.19718309859154928
+  },
+  {
+   "hour": 2,
+   "source": "tier1",
+   "strikes_region": 1185,
+   "status": "scored",
+   "strikes_tile": 538,
+   "cells_observed": 62,
+   "strikes_within_16km": 19,
+   "p_city": 0.724,
+   "p_max": 0.76,
+   "brier": 0.1002,
+   "scores": {
+    "0.2": {
+     "pod": 0.9032258064516129,
+     "far": 0.8276923076923077,
+     "csi": 0.1691842900302115
+    },
+    "0.3": {
+     "pod": 0.5967741935483871,
+     "far": 0.7430555555555556,
+     "csi": 0.21893491124260356
+    },
+    "0.4": {
+     "pod": 0.2903225806451613,
+     "far": 0.5135135135135135,
+     "csi": 0.2222222222222222
+    },
+    "0.5": {
+     "pod": 0.14516129032258066,
+     "far": 0.4,
+     "csi": 0.1323529411764706
+    }
+   },
+   "persistence_csi": 0.011904761904761904
+  },
+  {
+   "hour": 3,
+   "source": "tier1",
+   "strikes_region": 2748,
+   "status": "scored",
+   "strikes_tile": 758,
+   "cells_observed": 75,
+   "strikes_within_16km": 101,
+   "p_city": 0.427,
+   "p_max": 0.457,
+   "brier": 0.1023,
+   "scores": {
+    "0.2": {
+     "pod": 0.5333333333333333,
+     "far": 0.7647058823529411,
+     "csi": 0.1951219512195122
+    },
+    "0.3": {
+     "pod": 0.44,
+     "far": 0.42105263157894735,
+     "csi": 0.3333333333333333
+    },
+    "0.4": {
+     "pod": 0.2,
+     "far": 0.0625,
+     "csi": 0.19736842105263158
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 4,
+   "source": "tier2",
+   "strikes_region": 4077,
+   "status": "scored",
+   "strikes_tile": 1048,
+   "cells_observed": 63,
+   "strikes_within_16km": 0,
+   "p_city": 0.438,
+   "p_max": 0.449,
+   "brier": 0.1205,
+   "scores": {
+    "0.2": {
+     "pod": 0.8571428571428571,
+     "far": 0.8986866791744841,
+     "csi": 0.0996309963099631
+    },
+    "0.3": {
+     "pod": 0.4126984126984127,
+     "far": 0.7475728155339806,
+     "csi": 0.18571428571428572
+    },
+    "0.4": {
+     "pod": 0.031746031746031744,
+     "far": 0.8181818181818182,
+     "csi": 0.027777777777777776
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.011764705882352941
+  },
+  {
+   "hour": 5,
+   "source": "tier2",
+   "strikes_region": 6143,
+   "status": "scored",
+   "strikes_tile": 422,
+   "cells_observed": 42,
+   "strikes_within_16km": 43,
+   "p_city": 0.423,
+   "p_max": 0.429,
+   "brier": 0.1007,
+   "scores": {
+    "0.2": {
+     "pod": 1.0,
+     "far": 0.9269565217391305,
+     "csi": 0.07304347826086957
+    },
+    "0.3": {
+     "pod": 0.7619047619047619,
+     "far": 0.8,
+     "csi": 0.18823529411764706
+    },
+    "0.4": {
+     "pod": 0.16666666666666666,
+     "far": 0.125,
+     "csi": 0.16279069767441862
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 6,
+   "source": "tier2",
+   "strikes_region": 6029,
+   "status": "scored",
+   "strikes_tile": 246,
+   "cells_observed": 26,
+   "strikes_within_16km": 0,
+   "p_city": 0.413,
+   "p_max": 0.413,
+   "brier": 0.0839,
+   "scores": {
+    "0.2": {
+     "pod": 0.8846153846153846,
+     "far": 0.9472477064220184,
+     "csi": 0.05239179954441914
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  }
+ ]
+}

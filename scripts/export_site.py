@@ -330,7 +330,7 @@ def main(argv=None) -> dict:
     forecasts = []
     for sub, suffix in (("india", ""), ("india_insat", "_insat")):  # INSAT runs share stems with GK2A ones
         for p in sorted(glob.glob(os.path.join(args.results, sub, "*.json"))):
-            if p.endswith("_gk2a_check.json"):
+            if p.endswith("_check.json"):  # _gk2a_check, _ltg_check: verification files, not forecasts
                 continue
             d = export_forecast(p, out, cases, suffix)
             if d:

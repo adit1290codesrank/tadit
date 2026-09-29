@@ -1,0 +1,134 @@
+{
+ "provenance": {
+  "issue_time_utc": "2021-04-16T13:00:00",
+  "tile": {
+   "id": "Guwahati",
+   "center_lat": 26.144,
+   "center_lon": 91.736
+  },
+  "satellite": {
+   "source": "INSAT-3DR/3DS L1B (MOSDAC)",
+   "status": "live",
+   "scans": [
+    {
+     "scan": "2021-04-16T12:15:27",
+     "file": "3RIMG_16APR2021_1215_L1B_STD_V01R00.h5"
+    },
+    {
+     "scan": "2021-04-16T12:45:26",
+     "file": "3RIMG_16APR2021_1245_L1B_STD_V01R00.h5"
+    }
+   ]
+  },
+  "radar": {
+   "status": "missing"
+  },
+  "lightning": {
+   "source": "flashes_20210416_ne.csv",
+   "status": "live",
+   "strikes_in_window": 4
+  },
+  "nwp": [
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 7,
+    "valid": "2021-04-16T13:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 8,
+    "valid": "2021-04-16T14:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 9,
+    "valid": "2021-04-16T15:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 10,
+    "valid": "2021-04-16T16:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 11,
+    "valid": "2021-04-16T17:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 12,
+    "valid": "2021-04-16T18:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2021-04-16T06:00:00",
+    "fxx": 13,
+    "valid": "2021-04-16T19:00:00",
+    "status": "ok"
+   }
+  ]
+ },
+ "summary": [
+  {
+   "lead_hour": 1,
+   "source": "tier1",
+   "p_lightning_at_location": 0.242,
+   "p_lightning_max_in_tile": 0.292,
+   "risk": "MODERATE"
+  },
+  {
+   "lead_hour": 2,
+   "source": "tier1",
+   "p_lightning_at_location": 0.266,
+   "p_lightning_max_in_tile": 0.279,
+   "risk": "MODERATE"
+  },
+  {
+   "lead_hour": 3,
+   "source": "tier1",
+   "p_lightning_at_location": 0.224,
+   "p_lightning_max_in_tile": 0.235,
+   "risk": "MODERATE"
+  },
+  {
+   "lead_hour": 4,
+   "source": "tier2",
+   "p_lightning_at_location": 0.25,
+   "p_lightning_max_in_tile": 0.315,
+   "risk": "MODERATE"
+  },
+  {
+   "lead_hour": 5,
+   "source": "tier2",
+   "p_lightning_at_location": 0.296,
+   "p_lightning_max_in_tile": 0.378,
+   "risk": "MODERATE"
+  },
+  {
+   "lead_hour": 6,
+   "source": "tier2",
+   "p_lightning_at_location": 0.36,
+   "p_lightning_max_in_tile": 0.389,
+   "risk": "MODERATE"
+  }
+ ],
+ "model_trained_on": "SEVIR (GOES-16/NEXRAD/GLM) + HRRR, US 2018-19, with INSAT-like and GFS-like input augmentation; skill over India not yet verified against Indian lightning observations",
+ "tier1_inputs_present": {
+  "ir": true,
+  "vil": false,
+  "lght": true,
+  "nwp": true
+ }
+}

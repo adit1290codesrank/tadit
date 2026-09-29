@@ -1,0 +1,218 @@
+{
+ "city": "Guwahati",
+ "issue_utc": "2021-04-16T13:00:00",
+ "source": "FY-4A LMI (corrected events, TPDC)",
+ "what": "Forecast vs observed lightning: any strike in a 16 km cell during the lead hour",
+ "hours": [
+  {
+   "hour": 1,
+   "source": "tier1",
+   "strikes_region": 1262,
+   "status": "scored",
+   "strikes_tile": 171,
+   "cells_observed": 31,
+   "strikes_within_16km": 0,
+   "p_city": 0.242,
+   "p_max": 0.292,
+   "brier": 0.046,
+   "scores": {
+    "0.2": {
+     "pod": 0.16129032258064516,
+     "far": 0.8936170212765957,
+     "csi": 0.0684931506849315
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 2,
+   "source": "tier1",
+   "strikes_region": 1377,
+   "status": "scored",
+   "strikes_tile": 179,
+   "cells_observed": 32,
+   "strikes_within_16km": 0,
+   "p_city": 0.266,
+   "p_max": 0.279,
+   "brier": 0.0493,
+   "scores": {
+    "0.2": {
+     "pod": 0.0625,
+     "far": 0.9130434782608695,
+     "csi": 0.03773584905660377
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 3,
+   "source": "tier1",
+   "strikes_region": 1614,
+   "status": "scored",
+   "strikes_tile": 259,
+   "cells_observed": 39,
+   "strikes_within_16km": 0,
+   "p_city": 0.224,
+   "p_max": 0.235,
+   "brier": 0.0593,
+   "scores": {
+    "0.2": {
+     "pod": 0.07692307692307693,
+     "far": 0.625,
+     "csi": 0.06818181818181818
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 4,
+   "source": "tier2",
+   "strikes_region": 838,
+   "status": "scored",
+   "strikes_tile": 64,
+   "cells_observed": 15,
+   "strikes_within_16km": 0,
+   "p_city": 0.25,
+   "p_max": 0.315,
+   "brier": 0.0542,
+   "scores": {
+    "0.2": {
+     "pod": 1.0,
+     "far": 0.945054945054945,
+     "csi": 0.054945054945054944
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 5,
+   "source": "tier2",
+   "strikes_region": 3268,
+   "status": "scored",
+   "strikes_tile": 362,
+   "cells_observed": 50,
+   "strikes_within_16km": 0,
+   "p_city": 0.296,
+   "p_max": 0.378,
+   "brier": 0.0928,
+   "scores": {
+    "0.2": {
+     "pod": 0.74,
+     "far": 0.8582375478927203,
+     "csi": 0.13503649635036497
+    },
+    "0.3": {
+     "pod": 0.0,
+     "far": 1.0,
+     "csi": 0.0
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  },
+  {
+   "hour": 6,
+   "source": "tier2",
+   "strikes_region": 8209,
+   "status": "scored",
+   "strikes_tile": 3153,
+   "cells_observed": 135,
+   "strikes_within_16km": 90,
+   "p_city": 0.36,
+   "p_max": 0.389,
+   "brier": 0.1656,
+   "scores": {
+    "0.2": {
+     "pod": 0.6962962962962963,
+     "far": 0.6,
+     "csi": 0.34057971014492755
+    },
+    "0.3": {
+     "pod": 0.21481481481481482,
+     "far": 0.5671641791044776,
+     "csi": 0.1676300578034682
+    },
+    "0.4": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    },
+    "0.5": {
+     "pod": 0.0,
+     "far": null,
+     "csi": 0.0
+    }
+   },
+   "persistence_csi": 0.0
+  }
+ ]
+}

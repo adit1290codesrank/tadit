@@ -100,7 +100,7 @@ def run(args, gfs_fetch=None) -> dict:
             z = np.load(args.radar_npz)
             vil[:] = radar.dbz_to_tile(z["dbz"], z["lat"], z["lon"], tile, hr)[None]
             present["vil"] = True
-            prov["radar"] = {"source": "IMD DWR reflectivity", "status": "approximate",
+            prov["radar"] = {"source": str(z["source"]) if "source" in z.files else "IMD DWR reflectivity", "status": "approximate",
                              "detail": "single composite held over the input window; VIL approximated from dBZ"}
         else:
             present["vil"] = False
@@ -213,7 +213,7 @@ def main(argv=None):
     ap.add_argument("--insat-dir")
     ap.add_argument("--gk2a", action="store_true", help="use GK2A (open, no login) when INSAT is not available")
     ap.add_argument("--gk2a-dir", default="data/gk2a", help="download cache for GK2A scans")
-    ap.add_argument("--radar-npz", help=".npz with dbz, lat, lon arrays (IMD DWR)")
+    ap.add_argument("--radar-npz", help=".npz with dbz, lat, lon arrays (+ optional source name), e.g. from scripts/cfradial_to_maxz.py")
     ap.add_argument("--lightning-csv")
     ap.add_argument("--tier1")
     ap.add_argument("--tier2")

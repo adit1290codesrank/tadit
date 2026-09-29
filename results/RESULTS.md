@@ -62,4 +62,29 @@ Storm-location check against satellite: tier-1 CSI for hours 1 / 2 / 3.
 The model locates storms, but its probabilities are calibrated to US climatology. Recalibration needs
 Indian lightning observations; ILDN data has been requested.
 
+## India cases checked against real lightning (FY-4A LMI)
+Observed lightning is FY-4A LMI corrected events (TPDC, CC-BY 4.0, Mar-Sep 2019-2023; ~15 km accuracy).
+It is satellite lightning, not a ground network. A 16 km cell is "yes" if any event falls in it during the
+lead hour. Persistence = lightning cells in the 15 min before issue. Scoring is by
+`scripts/check_india_lightning.py`, with results in `*_ltg_check.json`.
+
+| case | inputs | CSI at P>=0.4, hours 1/2/3 | persistence, hours 1/2/3 |
+|---|---|---|---|
+| Bhubaneswar 2 Sep 2023 08Z | GK2A + GFS | 0.24 / 0.22 / 0.20 | 0.20 / 0.01 / 0.00 |
+| Bhubaneswar 2 Sep 2023 08Z | INSAT + GFS | 0.24 / 0.16 / 0.13 | 0.20 / 0.01 / 0.00 |
+| Guwahati 16 Apr 2021 13Z | INSAT + GFS | 0.21 / 0.00 / 0.00 (0.26 / 0.28 / 0.14 at the best threshold) | 0.00 / 0.00 / 0.00 |
+
+The model beats persistence in both cases, but India skill (CSI ~0.2-0.3) is well below the US test (0.61 at
+hour 1). The inputs are satellite and GFS only, and the model is trained on US storms. In Guwahati, tier 2 gave
+MODERATE (0.36) for hour 6, and the evening storm hit the city in that hour (90 events within 16 km).
+
+Two experiments on the Guwahati case (`results/ne2021/`), both negative, reported as measured:
+- **FY-4A as the lightning input** (events grouped into flashes, `scripts/lmi_to_flashes.py`) *lowered*
+  confidence: the peak in the tile went from 0.49 to 0.29 in hour 1. The tile had almost no lightning at issue
+  time, since the storms formed later, and LMI detects fewer flashes than the GLM the model was trained on.
+  It needs recalibrating before it is used as an input.
+- **ISRO Cherrapunji DWR** (MOSDAC, `scripts/cfradial_to_maxz.py`) could not see this storm: it was 150-230 km
+  north, behind the Shillong plateau. The radar was not used. Its archive also has gaps (no data for 20-21
+  Mar 2023, 31 Mar 2024 or after 04:30 UTC on 1 Apr 2021).
+
 Trained on US GLM lightning, adapted to INSAT/GFS, not yet verified against Indian lightning observations.
