@@ -7,24 +7,12 @@
    "center_lon": 85.825
   },
   "satellite": {
-   "source": "GK2A AMI L1B (KMA, NOAA open data); stand-in until INSAT is connected",
+   "source": "INSAT-3DR/3DS L1B (MOSDAC)",
    "status": "live",
    "scans": [
     {
-     "scan": "2023-09-02T07:30:00",
-     "coverage": 1.0
-    },
-    {
-     "scan": "2023-09-02T07:40:00",
-     "coverage": 1.0
-    },
-    {
-     "scan": "2023-09-02T07:50:00",
-     "coverage": 1.0
-    },
-    {
-     "scan": "2023-09-02T08:00:00",
-     "coverage": 1.0
+     "scan": "2023-09-02T07:15:26",
+     "file": "3RIMG_02SEP2023_0715_L1B_STD_V01R00.h5"
     }
    ]
   },
@@ -90,22 +78,22 @@
   {
    "lead_hour": 1,
    "source": "tier1",
-   "p_lightning_at_location": 0.708,
-   "p_lightning_max_in_tile": 0.747,
-   "risk": "HIGH"
+   "p_lightning_at_location": 0.469,
+   "p_lightning_max_in_tile": 0.614,
+   "risk": "MODERATE"
   },
   {
    "lead_hour": 2,
    "source": "tier1",
-   "p_lightning_at_location": 0.724,
-   "p_lightning_max_in_tile": 0.76,
+   "p_lightning_at_location": 0.629,
+   "p_lightning_max_in_tile": 0.629,
    "risk": "HIGH"
   },
   {
    "lead_hour": 3,
    "source": "tier1",
-   "p_lightning_at_location": 0.427,
-   "p_lightning_max_in_tile": 0.457,
+   "p_lightning_at_location": 0.462,
+   "p_lightning_max_in_tile": 0.474,
    "risk": "MODERATE"
   },
   {

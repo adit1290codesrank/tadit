@@ -298,7 +298,8 @@ def _provenance_lines(prov):
     if isinstance(sat, dict) and sat.get("scans"):
         name = str(sat.get("source", "satellite")).split("(")[0].split(";")[0].strip()
         times = [s["scan"][11:16] for s in sat["scans"]]
-        out.append(f"Satellite: {name}, {len(times)} scans {times[0]}-{times[-1]} UTC")
+        when = f"scan at {times[0]}" if len(times) == 1 else f"{len(times)} scans {times[0]}-{times[-1]}"
+        out.append(f"Satellite: {name}, {when} UTC")
     else:
         out.append("Satellite: missing")
     for key, label in (("radar", "Radar"), ("lightning", "Lightning")):

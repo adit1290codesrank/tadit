@@ -1,0 +1,40 @@
+{
+ "city": "Kolkata",
+ "issue_utc": "2024-05-09T06:00",
+ "proxy": "storm-location check: GK2A IR10.5 < -52 C in 16 km cells vs tier-1 P >= 0.4; not lightning verification",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.566,
+   "coldest_city_c": -44.6,
+   "deep_cells": 1,
+   "fc_cells": 86,
+   "hits": 1,
+   "pod": 1.0,
+   "far": 0.9883720930232558,
+   "csi": 0.011627906976744186
+  },
+  {
+   "hour": 2,
+   "p_city": 0.691,
+   "coldest_city_c": -49.3,
+   "deep_cells": 7,
+   "fc_cells": 86,
+   "hits": 4,
+   "pod": 0.5714285714285714,
+   "far": 0.9534883720930233,
+   "csi": 0.0449438202247191
+  },
+  {
+   "hour": 3,
+   "p_city": 0.647,
+   "coldest_city_c": -48.8,
+   "deep_cells": 2,
+   "fc_cells": 135,
+   "hits": 0,
+   "pod": 0.0,
+   "far": 1.0,
+   "csi": 0.0
+  }
+ ]
+}

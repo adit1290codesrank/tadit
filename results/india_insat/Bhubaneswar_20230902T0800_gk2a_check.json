@@ -1,0 +1,40 @@
+{
+ "city": "Bhubaneswar",
+ "issue_utc": "2023-09-02T08:00",
+ "proxy": "storm-location check: GK2A IR10.5 < -52 C in 16 km cells vs tier-1 P >= 0.4; not lightning verification",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.469,
+   "coldest_city_c": -76.7,
+   "deep_cells": 238,
+   "fc_cells": 154,
+   "hits": 125,
+   "pod": 0.5252100840336135,
+   "far": 0.18831168831168832,
+   "csi": 0.4681647940074906
+  },
+  {
+   "hour": 2,
+   "p_city": 0.629,
+   "coldest_city_c": -88.6,
+   "deep_cells": 306,
+   "fc_cells": 64,
+   "hits": 50,
+   "pod": 0.16339869281045752,
+   "far": 0.21875,
+   "csi": 0.15625
+  },
+  {
+   "hour": 3,
+   "p_city": 0.462,
+   "coldest_city_c": -84.3,
+   "deep_cells": 348,
+   "fc_cells": 11,
+   "hits": 11,
+   "pod": 0.031609195402298854,
+   "far": 0.0,
+   "csi": 0.031609195402298854
+  }
+ ]
+}
