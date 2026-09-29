@@ -225,7 +225,7 @@ The website never runs the models. It reads static files exported from the pipel
 
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json --out site/public/data
-# add --boundary <ISRO Bhuvan India GeoJSON> for the map outline (never Natural Earth)
+# add --boundary data/boundaries/india_states.geojson (Survey of India) for the map outline (never Natural Earth)
 ```
 
 Run it on the server, where the India `.npz` map files exist, so map overlays are included. Re-run after every new India run.

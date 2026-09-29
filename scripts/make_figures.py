@@ -9,11 +9,11 @@
   fig6_india_<case>.png   India case: hourly lightning probability maps and the risk timeline
   scorecard.md            the fig1 numbers as a table
 
-India maps draw boundaries only from --boundary (GeoJSON exported from ISRO Bhuvan). Without it the
+India maps draw boundaries only from --boundary (Survey of India state GeoJSON). Without it the
 map has a lat/lon grid and no boundary lines; Natural Earth is never used.
 
   python scripts/make_figures.py --results results --out figures --switch-hour 3 \
-      --boundary data/bhuvan_india_states.geojson
+      --boundary data/boundaries/india_states.geojson
 """
 
 import argparse
@@ -388,7 +388,7 @@ def india_cases(res, out, boundary):
         name = tile_id if tile_id in CITIES else f"{point[0]:.2f}N {point[1]:.2f}E"
         fig.suptitle(f"{name}, issued {when[:4]}-{when[4:6]}-{when[6:8]} {when[9:11]}:{when[11:13]} UTC",
                      x=0.01, ha="left", fontsize=15, fontweight="bold")
-        footnote(fig, "Boundaries: ISRO Bhuvan." if lines else "Boundaries not drawn (pass --boundary with a Bhuvan export).")
+        footnote(fig, "Boundaries: Survey of India." if lines else "Boundaries not drawn (pass --boundary).")
         save(fig, out, f"fig6_india_{stem}.png")
 
 
@@ -397,7 +397,7 @@ def main():
     ap.add_argument("--results", default="results")
     ap.add_argument("--out", default="figures")
     ap.add_argument("--switch-hour", type=int, help="default: first hour where tier 2 beats tier 1, minus one")
-    ap.add_argument("--boundary", help="GeoJSON of India boundaries exported from ISRO Bhuvan")
+    ap.add_argument("--boundary", help="GeoJSON of official India boundaries (Survey of India depiction)")
     ap.add_argument("--examples", type=int, default=4, help="forecast example figures to draw")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
