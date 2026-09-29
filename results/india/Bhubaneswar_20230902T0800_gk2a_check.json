@@ -1,0 +1,40 @@
+{
+ "city": "Bhubaneswar",
+ "issue_utc": "2023-09-02T08:00",
+ "proxy": "GK2A IR10.5 < -52C deep convection, 16 km cells; forecast P>=0.4",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.708,
+   "coldest_city_c": -76.7,
+   "deep_cells": 238,
+   "fc_cells": 118,
+   "hits": 107,
+   "pod": 0.4495798319327731,
+   "far": 0.09322033898305085,
+   "csi": 0.42971887550200805
+  },
+  {
+   "hour": 2,
+   "p_city": 0.724,
+   "coldest_city_c": -88.6,
+   "deep_cells": 306,
+   "fc_cells": 37,
+   "hits": 31,
+   "pod": 0.10130718954248366,
+   "far": 0.16216216216216217,
+   "csi": 0.09935897435897435
+  },
+  {
+   "hour": 3,
+   "p_city": 0.427,
+   "coldest_city_c": -84.3,
+   "deep_cells": 348,
+   "fc_cells": 16,
+   "hits": 16,
+   "pod": 0.04597701149425287,
+   "far": 0.0,
+   "csi": 0.04597701149425287
+  }
+ ]
+}

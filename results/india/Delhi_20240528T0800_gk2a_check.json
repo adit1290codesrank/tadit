@@ -1,0 +1,40 @@
+{
+ "city": "Delhi",
+ "issue_utc": "2024-05-28T08:00",
+ "proxy": "storm-location check: GK2A IR10.5 < -52 C in 16 km cells vs tier-1 P >= 0.4; not lightning verification",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.039,
+   "coldest_city_c": 31.7,
+   "deep_cells": 0,
+   "fc_cells": 0,
+   "hits": 0,
+   "pod": NaN,
+   "far": NaN,
+   "csi": NaN
+  },
+  {
+   "hour": 2,
+   "p_city": 0.037,
+   "coldest_city_c": 31.0,
+   "deep_cells": 0,
+   "fc_cells": 0,
+   "hits": 0,
+   "pod": NaN,
+   "far": NaN,
+   "csi": NaN
+  },
+  {
+   "hour": 3,
+   "p_city": 0.031,
+   "coldest_city_c": 30.7,
+   "deep_cells": 0,
+   "fc_cells": 0,
+   "hits": 0,
+   "pod": NaN,
+   "far": NaN,
+   "csi": NaN
+  }
+ ]
+}

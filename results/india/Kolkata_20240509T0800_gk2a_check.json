@@ -1,0 +1,40 @@
+{
+ "city": "Kolkata",
+ "issue_utc": "2024-05-09T08:00",
+ "proxy": "GK2A IR10.5 < -52C deep convection, 16 km cells; forecast P>=0.4",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.461,
+   "coldest_city_c": -48.8,
+   "deep_cells": 2,
+   "fc_cells": 142,
+   "hits": 2,
+   "pod": 1.0,
+   "far": 0.9859154929577465,
+   "csi": 0.014084507042253521
+  },
+  {
+   "hour": 2,
+   "p_city": 0.466,
+   "coldest_city_c": -40.9,
+   "deep_cells": 29,
+   "fc_cells": 166,
+   "hits": 25,
+   "pod": 0.8620689655172413,
+   "far": 0.8493975903614458,
+   "csi": 0.14705882352941177
+  },
+  {
+   "hour": 3,
+   "p_city": 0.363,
+   "coldest_city_c": -39.0,
+   "deep_cells": 21,
+   "fc_cells": 206,
+   "hits": 17,
+   "pod": 0.8095238095238095,
+   "far": 0.9174757281553398,
+   "csi": 0.08095238095238096
+  }
+ ]
+}

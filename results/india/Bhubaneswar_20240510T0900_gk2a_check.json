@@ -1,0 +1,40 @@
+{
+ "city": "Bhubaneswar",
+ "issue_utc": "2024-05-10T09:00",
+ "proxy": "GK2A IR10.5 < -52C deep convection, 16 km cells; forecast P>=0.4",
+ "hours": [
+  {
+   "hour": 1,
+   "p_city": 0.563,
+   "coldest_city_c": -40.0,
+   "deep_cells": 29,
+   "fc_cells": 92,
+   "hits": 27,
+   "pod": 0.9310344827586207,
+   "far": 0.7065217391304348,
+   "csi": 0.2872340425531915
+  },
+  {
+   "hour": 2,
+   "p_city": 0.602,
+   "coldest_city_c": -36.2,
+   "deep_cells": 48,
+   "fc_cells": 76,
+   "hits": 25,
+   "pod": 0.5208333333333334,
+   "far": 0.6710526315789473,
+   "csi": 0.25252525252525254
+  },
+  {
+   "hour": 3,
+   "p_city": 0.461,
+   "coldest_city_c": -8.2,
+   "deep_cells": 30,
+   "fc_cells": 39,
+   "hits": 1,
+   "pod": 0.03333333333333333,
+   "far": 0.9743589743589743,
+   "csi": 0.014705882352941176
+  }
+ ]
+}

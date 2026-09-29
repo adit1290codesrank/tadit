@@ -1,0 +1,98 @@
+{
+ "provenance": {
+  "issue_time_utc": "2024-05-28T08:00:00",
+  "tile": {
+   "id": "Delhi",
+   "center_lat": 28.614,
+   "center_lon": 77.209
+  },
+  "satellite": {
+   "source": "GK2A AMI L1B (KMA, NOAA open data); stand-in until INSAT is connected",
+   "status": "live",
+   "scans": [
+    {
+     "scan": "2024-05-28T07:30:00",
+     "coverage": 1.0
+    },
+    {
+     "scan": "2024-05-28T07:40:00",
+     "coverage": 1.0
+    },
+    {
+     "scan": "2024-05-28T07:50:00",
+     "coverage": 1.0
+    },
+    {
+     "scan": "2024-05-28T08:00:00",
+     "coverage": 1.0
+    }
+   ]
+  },
+  "radar": {
+   "status": "missing"
+  },
+  "lightning": {
+   "status": "missing"
+  },
+  "nwp": [
+   {
+    "model": "gfs",
+    "init": "2024-05-28T00:00:00",
+    "fxx": 8,
+    "valid": "2024-05-28T08:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2024-05-28T00:00:00",
+    "fxx": 9,
+    "valid": "2024-05-28T09:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2024-05-28T00:00:00",
+    "fxx": 10,
+    "valid": "2024-05-28T10:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "gfs",
+    "init": "2024-05-28T00:00:00",
+    "fxx": 11,
+    "valid": "2024-05-28T11:00:00",
+    "status": "ok"
+   }
+  ]
+ },
+ "summary": [
+  {
+   "lead_hour": 1,
+   "source": "tier1",
+   "p_lightning_at_location": 0.039,
+   "p_lightning_max_in_tile": 0.13,
+   "risk": "LOW"
+  },
+  {
+   "lead_hour": 2,
+   "source": "tier1",
+   "p_lightning_at_location": 0.037,
+   "p_lightning_max_in_tile": 0.085,
+   "risk": "LOW"
+  },
+  {
+   "lead_hour": 3,
+   "source": "tier1",
+   "p_lightning_at_location": 0.031,
+   "p_lightning_max_in_tile": 0.093,
+   "risk": "LOW"
+  }
+ ],
+ "model_trained_on": "SEVIR (GOES-16/NEXRAD/GLM) + HRRR, US 2018-19, with INSAT-like and GFS-like input augmentation; skill over India not yet verified against Indian lightning observations",
+ "tier1_inputs_present": {
+  "ir": true,
+  "vil": false,
+  "lght": false,
+  "nwp": true
+ }
+}
