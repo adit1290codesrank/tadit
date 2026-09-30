@@ -4,6 +4,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from PIL import Image
+
 from deckkit import *  # noqa: F401,F403
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
@@ -27,10 +29,11 @@ METHOD = [
     ("cloud", "Serve", "Maps + JSON exported to a static web app on Cloudflare Pages."),
 ]
 
-STACK = [("AI / ML", ["Python", "PyTorch", "NumPy", "bf16"], BLUE),
-         ("Data", ["xarray", "h5py", "s3fs", "Herbie", "pyproj", "cfgrib"], GREEN),
-         ("Web", ["React", "TypeScript", "Vite", "MapLibre GL"], VIOLET),
-         ("Infra", ["AWS Open Data", "Cloudflare Pages", "RTX 5060 Ti (16 GB)"], SAFFRON)]
+# (group, [(logo file or None, label)], colour); logos are in assets/logos/
+STACK = [("AI / ML", [("python", "Python"), ("pytorch", "PyTorch"), ("numpy", "NumPy"), (None, "bf16 training")], BLUE),
+         ("Data", [("xarray", "xarray"), ("herbie", "Herbie"), ("pyproj", "pyproj"), (None, "h5py · s3fs · cfgrib")], GREEN),
+         ("Web", [("react", "React"), ("typescript", "TypeScript"), ("vite", "Vite"), ("maplibre", "MapLibre GL")], VIOLET),
+         ("Infra", [("aws", "Open Data"), ("cloudflare", "Pages"), ("nvidia", "RTX 5060 Ti"), (None, "one 16 GB GPU")], SAFFRON)]
 
 
 def build(slide):
@@ -154,22 +157,34 @@ def build(slide):
     tx, tw = ex + ew + 0.12, X1 - (ex + ew + 0.12)
     S.box(tx, bt, tw, bb - bt, fill=WHITE, line=LINE, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05, shadow=True)
     panel_head(S, tx, bt, tw, "Technology Stack", GREEN)
-    y = bt + 0.42
-    for grp, items, col in STACK:
-        S.text(tx + 0.12, y, tw - 0.2, 0.16, grp.upper(), size=7, color=col, font=HEAD, bold=True)
-        y += 0.18
-        x = tx + 0.12
-        for it in items:
-            wd = 0.16 + 0.056 * len(it)
-            if x + wd > tx + tw - 0.1:
-                x = tx + 0.12
-                y += 0.24
-            S.box(x, y, wd, 0.21, fill=tint(col), line=None, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5)
-            S.text(x, y, wd, 0.21, it, size=7.2, color=INK, font=HEAD, bold=True, align=PP_ALIGN.CENTER,
-                   anchor=MSO_ANCHOR.MIDDLE)
-            x += wd + 0.06
-        y += 0.29
-
+    rows_top, rows_bot = bt + 0.42, bb - 0.08
+    rh = (rows_bot - rows_top) / len(STACK)
+    lw_, gap = 0.56, 0.06
+    for r, (grp, items, col) in enumerate(STACK):
+        y = rows_top + r * rh
+        th = rh - 0.06
+        S.box(tx + 0.1, y, lw_, th, fill=col, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.18)
+        S.text(tx + 0.1, y, lw_, th, grp, size=7.5, color=WHITE, font=HEAD, bold=True, align=PP_ALIGN.CENTER,
+               anchor=MSO_ANCHOR.MIDDLE)
+        x0 = tx + 0.1 + lw_ + gap
+        cw_ = (tx + tw - 0.1 - x0 - 3 * gap) / 4
+        for k, (logo, label) in enumerate(items):
+            x = x0 + k * (cw_ + gap)
+            S.box(x, y, cw_, th, fill=WHITE if logo else tint(col), line=LINE if logo else None,
+                  shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.18)
+            if logo:
+                path = ASSETS / "logos" / f"{logo}.png"
+                with Image.open(path) as im:
+                    aw, ah = im.size
+                bw, bh = cw_ - 0.14, th - 0.2
+                sc = min(bw / aw, bh / ah)
+                w, h = aw * sc, ah * sc
+                S.image(path, x + (cw_ - w) / 2, y + 0.04 + (bh - h) / 2, w, h)
+                S.text(x + 0.02, y + th - 0.15, cw_ - 0.04, 0.13, label, size=6, color=INK2, font=HEAD, bold=True,
+                       align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+            else:
+                S.text(x + 0.03, y, cw_ - 0.06, th, label, size=6.8, color=INK, font=HEAD, bold=True,
+                       align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, spacing=0.9)
 
 TINTS = {BLUE: "E3EEFB", GREEN: "E4F3E6", VIOLET: "ECE6F7", SAFFRON: "FDEBDD"}
 

@@ -1,8 +1,8 @@
 """Build the whole SIH idea deck from the untouched template.
 
 Usage (from the repo root):
-    python slides/build_deck.py                       # writes SIH2026-IDEA-Presentation-Format.pptx
-    python slides/build_deck.py --pdf                 # ... and exports the PDF via PowerPoint
+    python slides/build_deck.py                       # updates SIH-PPT.pptx
+    python slides/build_deck.py --pdf                 # ... and SIH-PPT.pdf, via PowerPoint
     python slides/build_deck.py --team-name X --team-id Y
 
 Every run starts again from slides/template/, so it is safe to re-run after changing any number.
@@ -24,7 +24,7 @@ from pptx.util import Pt
 from deckkit import BLUE, NAVY, find_slide, rgb  # noqa: E402
 
 TEMPLATE = HERE / "template" / "SIH2026-IDEA-Presentation-Format.pptx"
-OUT = ROOT / "SIH2026-IDEA-Presentation-Format.pptx"
+OUT = ROOT / "SIH-PPT.pptx"
 
 
 def load(rel):
