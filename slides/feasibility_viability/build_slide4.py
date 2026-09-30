@@ -19,13 +19,14 @@ COLUMNS = [  # (color, header icon, title, tagline, [(icon, text), ...])
     (BLUE, "cpu", "Technical Feasibility", "Built, trained and tested today", [
         ("layers", "**Working two-tier AI:** 60M-parameter fusion U-Net for 0–3 h plus an NWP post-processor for 3–6 h, "
                    "trained on 3,000 real storm events."),
-        ("timer", "**Fast:** a full 0–6 h forecast for an Indian city in **about 1 minute**, data download included."),
+        ("timer", "**Fast:** a full 0–6 h forecast takes **a few minutes per city**, mostly data download; the model itself "
+                  "runs in seconds."),
         ("cpu", "**Light:** trained overnight on **one 16 GB consumer GPU**; the deployed model file is 120 MB."),
         ("code", "**Reliable build:** open-source Python / PyTorch stack, covered by **38 automated tests**."),
     ]),
     (GREEN, "plug", "Operational Feasibility", "Runs on India’s own data", [
-        ("sat", "**Indian data readers ready:** INSAT-3DR/3DS (MOSDAC), IMD Doppler radar, GFS and lightning strike feeds."),
-        ("shieldcheck", "**Verified on real files:** our INSAT reader matches the GK2A satellite on the same scene (r = 0.87)."),
+        ("sat", "**Indian data readers:** INSAT, IMD radar, GFS and strike feeds; **INSAT and GFS verified on real files**."),
+        ("shieldcheck", "**INSAT cross-checked:** our INSAT reader matches the GK2A satellite on the same scene (r = 0.87)."),
         ("wifioff", "**Works with gaps:** runs on whichever sources are live, and every output lists what it used."),
         ("map", "**Easy to plug in:** standard map + JSON outputs for IMD’s nowcast portal and alert apps; "
                 "the web viewer needs no backend."),
@@ -33,8 +34,7 @@ COLUMNS = [  # (color, header icon, title, tagline, [(icon, text), ...])
     (AMBER, "rupee", "Economic Viability", "Low cost, scalable, policy-aligned", [
         ("database", "**No new hardware:** reuses radar, satellite and NWP data IMD already collects; open GK2A / GFS as backup."),
         ("cloud", "**Near-zero serving cost:** forecasts are static files served from a free CDN (Cloudflare Pages)."),
-        ("trend", "**Scales simply:** ≈30 tiles of 384 km cover India; at ~1 min per tile, one GPU refreshes the whole country "
-                  "in about 30 min."),
+        ("trend", "**Scales simply:** ≈30 tiles of 384 km cover India, and one GPU can refresh them all."),
         ("landmark", "**Policy fit:** supports MoES’s **Mission Mausam** (₹2,000 cr) goals of more frequent nowcasts "
                      "and no undetected weather events."),
     ]),
@@ -44,8 +44,9 @@ RISKS = [  # (icon, challenge, strategy)
     ("search",
      "**Limited access to data:** Indian lightning archives (ILLN / ILDN) and radar volumes are not openly available, "
      "so early findings may be misleading.",
-     "**Gets better as validated data arrives:** ILDN data is requested and every output carries an honest label. "
-     "**As the model gets validated Indian data, it recalibrates and becomes more accurate.**"),
+     "**Improves with Indian data:** ILDN (Tripura University) has offered to partner and share lightning data for "
+     "SIH-2026; "
+     "**as the model gets validated data, it recalibrates and gets more accurate.**"),
     ("globe",
      "**Trained on US storms, used in India:** monsoon storms, terrain and INSAT’s slower scans differ from the "
      "US training data.",

@@ -8,9 +8,9 @@ from deckkit import *  # noqa: F401,F403
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 
-INPUTS = [("radar", "Radar", "IMD DWR · NEXRAD VIL", BLUE),
+INPUTS = [("radar", "Radar", "NEXRAD VIL (training); IMD DWR reader built, not yet on live data", BLUE),
           ("sat", "Satellite", "INSAT-3DR/3DS · GK2A · GOES IR", VIOLET),
-          ("zap", "Lightning", "ILDN / strike feeds · GLM", "E3A000"),
+          ("zap", "Lightning", "GLM (training); ILDN partnership offered", "E3A000"),
           ("globe", "Weather model", "GFS 0.25° · HRRR", GREEN)]
 
 PREP = ["384 km tiles on one map grid",
@@ -21,16 +21,16 @@ PREP = ["384 km tiles on one map grid",
 
 METHOD = [
     ("database", "Data", "3,000 real US storm events (SEVIR) + HRRR; split by date, so test storms are unseen."),
-    ("cpu", "Train", "Intensity-weighted radar loss + focal lightning loss; modality dropout; one night on an RTX 4060 Ti."),
+    ("cpu", "Train", "Intensity-weighted radar loss + focal lightning loss; modality dropout; one night on an RTX 5060 Ti."),
     ("search", "Evaluate", "CSI / POD / FAR per lead hour vs persistence and raw NWP; drop-a-sensor tests."),
     ("pin", "India", "Run on INSAT / GK2A + GFS; checked against FY-4A satellite lightning."),
     ("cloud", "Serve", "Maps + JSON exported to a static web app on Cloudflare Pages."),
 ]
 
-STACK = [("AI / ML", ["Python", "PyTorch", "NumPy", "bf16 + torch.compile"], BLUE),
+STACK = [("AI / ML", ["Python", "PyTorch", "NumPy", "bf16"], BLUE),
          ("Data", ["xarray", "h5py", "s3fs", "Herbie", "pyproj", "cfgrib"], GREEN),
          ("Web", ["React", "TypeScript", "Vite", "MapLibre GL"], VIOLET),
-         ("Infra", ["AWS Open Data", "Cloudflare Pages", "Hugging Face", "RTX 4060 Ti / 5090"], SAFFRON)]
+         ("Infra", ["AWS Open Data", "Cloudflare Pages", "RTX 5060 Ti (16 GB)"], SAFFRON)]
 
 
 def build(slide):
@@ -51,8 +51,8 @@ def build(slide):
         y = iy + 0.26 + k * 0.56
         S.box(ix, y, iw, 0.5, fill=WHITE, line=LINE, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.15, shadow=True)
         S.bubble(ic, ix + 0.26, y + 0.25, 0.34, col, pad=0.2)
-        S.text(ix + 0.5, y + 0.05, iw - 0.55, 0.2, t, size=9, color=col, font=HEAD, bold=True)
-        S.text(ix + 0.5, y + 0.25, iw - 0.55, 0.22, sub, size=6.8, color=MUTED)
+        S.text(ix + 0.5, y + 0.03, iw - 0.55, 0.2, t, size=9, color=col, font=HEAD, bold=True)
+        S.text(ix + 0.5, y + 0.21, iw - 0.55, 0.28, sub, size=6.3, color=MUTED, spacing=0.85)
     arrow(S, ix + iw + 0.04, iy + 1.35, 0.26)
 
     # preprocessing
@@ -72,7 +72,7 @@ def build(slide):
     # tier 1
     t1y, t1h = iy + 0.26, 1.28
     S.box(mx, t1y, mw, t1h, fill="EAF2FC", line=BLUE, lw=1.25, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.08)
-    S.text(mx + 0.12, t1y + 0.05, mw - 0.2, 0.2, "**TIER 1 · Fusion nowcaster** (0–3 h, every 10 min)",
+    S.text(mx + 0.12, t1y + 0.05, mw - 0.2, 0.2, "**TIER 1 · Fusion nowcaster** (0–3 h, 10-min steps)",
            size=9.5, color=BLUE, bold_color=BLUE, font=HEAD)
     S.text(mx + mw - 1.95, t1y + 0.07, 1.85, 0.18, "60M params · modality dropout", size=7, color=MUTED,
            align=PP_ALIGN.RIGHT)
@@ -136,12 +136,14 @@ def build(slide):
     ex, ew = mx0 + mw0 + 0.12, 4.9
     S.box(ex, bt, ew, bb - bt, fill=WHITE, line=LINE, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.05, shadow=True)
     panel_head(S, ex, bt, ew, "Forecasts vs Reality", SAFFRON)
-    S.text(ex + 0.12, bt + 0.38, ew - 0.24, 0.16, "**Held-out US storm:** forecast lightning chance (shading) vs observed flashes (o)",
-           size=7.3, color=MUTED, bold_color=INK)
-    h1 = (bb - bt - 0.56 - 0.26 - 0.06) / 2
+    S.text(ex + 0.12, bt + 0.37, ew - 0.24, 0.3,
+           ["**Held-out US storm:** forecast lightning chance (shading) vs observed flashes (o)",
+            "**Oklahoma City, 26 Aug 2019:** CSI **0.61 / 0.54 / 0.55** for hours 1–3 vs persistence 0.52 / 0.33 / 0.18"],
+           size=7.1, color=MUTED, bold_color=INK, spacing=0.9)
+    h1 = (bb - bt - 0.7 - 0.26 - 0.06) / 2
     w1 = h1 * 1810 / 455
-    S.image(ASSETS / "fig5_lightning_row.png", ex + (ew - w1) / 2, bt + 0.56, w1, h1)
-    y2 = bt + 0.56 + h1 + 0.06
+    S.image(ASSETS / "fig5_lightning_row.png", ex + (ew - w1) / 2, bt + 0.7, w1, h1)
+    y2 = bt + 0.7 + h1 + 0.06
     S.text(ex + 0.12, y2, ew - 0.24, 0.16, "**India, Bhubaneswar 2 Sep 2023:** hours 1–3 from satellite + GFS only (★ city)",
            size=7.3, color=MUTED, bold_color=INK)
     h2 = bb - 0.06 - (y2 + 0.18)

@@ -12,8 +12,8 @@ SITE = "https://tadit.pages.dev/"
 SOLUTION = [  # (icon, text)
     ("layers", "**Multimodal AI fusion:** one model reads Doppler radar, INSAT / GK2A satellite imagery, lightning strikes "
                "and GFS weather-model fields together."),
-    ("clock", "**Seamless 0–6 h:** Tier 1 deep-learning nowcast every 10 min for 0–3 h, then Tier 2 AI-corrected "
-              "NWP for hours 4–6, switching at the measured crossover hour."),
+    ("clock", "**Seamless 0–6 h:** Tier 1 deep-learning nowcast in 10-min steps for 0–3 h, then Tier 2 AI-corrected "
+              "NWP hourly for hours 4–6, switching at the measured crossover hour."),
     ("map", "**What it delivers:** lightning probability per 16 km cell, radar-like storm intensity at 2 km, and "
             "LOW / MODERATE / HIGH risk with plain advice for each city."),
     ("wifioff", "**Built for India’s gaps:** keeps working without radar or a lightning feed; runs today on "
@@ -23,7 +23,7 @@ SOLUTION = [  # (icon, text)
 ]
 
 ADDRESSES = [  # (headline, text)
-    ("3 h → 6 h", "IMD’s nowcasts look 3 h ahead. Tadit forecasts **6 h**, refreshed every 10 min."),
+    ("3 h → 6 h", "IMD’s nowcasts look 3 h ahead. Tadit forecasts **6 h**: 10-min steps to 3 h, then hourly."),
     ("No radar? Still works", "Large parts of India lack radar. Satellite + NWP alone reaches **0.461** CSI at hour 1."),
     ("From maps to action", "City-level hourly risk with advice (“go indoors now”) for officials and the public."),
 ]
@@ -37,7 +37,7 @@ INNOVATION = [
 
 FLOW = [("sat", "Observe", "radar, satellite, lightning, NWP", BLUE),
         ("layers", "Fuse", "one multimodal AI model", VIOLET),
-        ("zap", "Forecast", "0–6 h, every 10 min", SAFFRON),
+        ("zap", "Forecast", "10-min steps to 3 h, hourly to 6 h", SAFFRON),
         ("alert", "Alert", "city risk + advice", RED)]
 
 
@@ -51,8 +51,8 @@ def build(slide):
     S.box(X0, 1.2, X1 - X0, 0.44, fill=NAVY, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5, shadow=True)
     S.icon("zap_FFB400", X0 + 0.14, 1.27, 0.3)
     S.text(X0 + 0.52, 1.2, 9.4, 0.44,
-           "**Tadit** (तड़ित = lightning) fuses **radar, satellite, lightning and weather-model** data into "
-           "one AI that forecasts **where lightning will strike, every 10 min, up to 6 h ahead**.",
+           "**Tadit** (तड़ित = lightning) fuses **radar, satellite, lightning and weather-model** data "
+           "into one AI that forecasts **where lightning will strike**, in 10-min steps to 3 h and hourly to 6 h.",
            size=10, color="DCE6F2", bold_color="FFD166", anchor=MSO_ANCHOR.MIDDLE)
     S.box(10.2, 1.27, 2.78, 0.3, fill=BOLT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5)
     S.text(10.2, 1.27, 2.78, 0.3, f"[Live prototype: tadit.pages.dev]({SITE})", size=9.5, font=HEAD, bold=True,

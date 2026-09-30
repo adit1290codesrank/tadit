@@ -29,7 +29,7 @@ from deckkit import *  # noqa: F401,F403  (palette, fonts, Slide helpers)
 # ---------------------------------------------------------------- content
 AUDIENCE = [  # (side, row, color, icon, title, subtitle, body)
     ("l", 0, BLUE, "landmark", "IMD Forecasters", "MoES · forecast centres",
-     "Auto-updated **10-min, 2 km** storm and lightning maps. **Doubles the nowcast window**, 3 h to **6 h**."),
+     "Storm and lightning maps in **10-min steps at 2 km**. **Doubles the nowcast window**, 3 h to **6 h**."),
     ("l", 1, RED, "shield", "Disaster Managers", "NDMA · SDMAs · districts",
      "**Earlier, district-level alerts** to clear fields, fairs, beaches and schools **before the first strike**."),
     ("l", 2, GREEN, "sprout", "Farmers & Labourers", "most exposed, out in the open",
@@ -39,7 +39,7 @@ AUDIENCE = [  # (side, row, color, icon, title, subtitle, body)
     ("r", 1, SAFFRON, "pole", "Power & Telecom", "grid, towers, rail signalling",
      "**Pre-position repair crews** and shield lines, towers and signalling from **lightning and squalls**."),
     ("r", 2, TEAL, "users", "Citizens & Cities", "hyper-local alerts",
-     "“Storm in the next hour” alerts. **Tested on Bhubaneswar, Kolkata and Delhi storms.**"),
+     "**Tested on Bhubaneswar, Kolkata and Guwahati storms**, plus a dry-day control in Delhi."),
 ]
 
 BENEFITS = [  # (color, icon, label, body)
@@ -148,7 +148,7 @@ def build(slide):
         y = hy + hr + 0.07 + k * 0.24
         S.box(hx - tw / 2, y, tw, 0.2, fill=col, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5)
         S.text(hx - tw / 2, y, tw, 0.2, lab, size=7.5, color=WHITE, font=HEAD, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-    S.text(hx - 1.1, hy + hr + 0.55, 2.2, 0.14, "updates every 10 min · 2 km radar grid", size=7, color=MUTED, align=PP_ALIGN.CENTER)
+    S.text(hx - 1.1, hy + hr + 0.55, 2.2, 0.14, "10-min steps to 3 h · hourly to 6 h", size=7, color=MUTED, align=PP_ALIGN.CENTER)
 
     # ---------------- right panel: benefits
     rx0, rw = 7.74, X1 - 7.74

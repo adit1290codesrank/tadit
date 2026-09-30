@@ -19,16 +19,16 @@ DATA = [  # (status, text)
     ("INDIA", "**INSAT-3DR Imager L1B** (3RIMG_L1B_STD), ISRO / SAC · [mosdac.gov.in](https://www.mosdac.gov.in)"),
     ("INDIA", "**GK2A AMI L1B** satellite, KMA via NOAA, no login · "
               "[registry.opendata.aws/noaa-gk2a-pds](https://registry.opendata.aws/noaa-gk2a-pds/)"),
-    ("VERIFY", "**FY-4A LMI corrected lightning events**, ESSD 18, 5773 (2026), CC-BY 4.0 · "
-               "[paper](https://essd.copernicus.org/articles/18/5773/2026/) · "
+    ("VERIFY", "**FY-4A LMI corrected lightning events**, Zhang et al., ESSD 18, 5773–5791 (2026), CC-BY 4.0 · "
+               "[doi:10.5194/essd-18-5773-2026](https://doi.org/10.5194/essd-18-5773-2026) · "
                "[data](https://doi.org/10.11888/Atmos.tpdc.303312)"),
     ("TESTED", "**ISRO Cherrapunji DWR** (RSCHR_L2B_STD), tested, not used · [mosdac.gov.in](https://www.mosdac.gov.in)"),
     ("MAPS", "**Survey of India** boundaries (OVSF/1M/7) · "
              "[onlinemaps.surveyofindia.gov.in](https://onlinemaps.surveyofindia.gov.in)"),
-    ("ASKED", "**ILDN** Indian Lightning Detection Network, CeLTS, Tripura University: data requested · "
+    ("PARTNER", "**ILDN** Indian Lightning Detection Network, CeLTS, Tripura University: partnership offered (Sep 2026) · "
               "[ildn.in](https://ildn.in)"),
 ]
-STATUS = {"TRAIN": BLUE, "INDIA": GREEN, "VERIFY": SAFFRON, "TESTED": MUTED, "MAPS": TEAL, "ASKED": VIOLET}
+STATUS = {"TRAIN": BLUE, "INDIA": GREEN, "VERIFY": SAFFRON, "TESTED": MUTED, "MAPS": TEAL, "PARTNER": VIOLET}
 
 PAPERS = [  # (group, [entries])
     ("Model design", [
