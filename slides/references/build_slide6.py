@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from deckkit import *  # noqa: F401,F403
 
 SITE = "https://tadit.pages.dev/"
-REPO = "https://github.com/adit1290codesrank/sih2026"
+REPO = "https://github.com/adit1290codesrank/tadit"
 
 DATA = [  # (status, text)
     ("TRAIN", "**SEVIR** storm events: radar VIL, GOES-16 IR, GLM lightning. Veillette et al., NeurIPS 2020 · "
@@ -52,7 +52,7 @@ PAPERS = [  # (group, [entries])
     ]),
     ("Our work", [
         "**Tadit** frozen results and scorecard, [results/RESULTS.md]"
-        "(https://github.com/adit1290codesrank/sih2026/blob/main/results/RESULTS.md) · "
+        "(https://github.com/adit1290codesrank/tadit/blob/main/results/RESULTS.md) · "
         "live site [tadit.pages.dev](https://tadit.pages.dev/)",
     ]),
     ("Verification & physics", [
@@ -119,7 +119,7 @@ def build(slide):
     c3x, c3w = c2x + c2w + 0.12, X1 - (c2x + c2w + 0.12)
     # link buttons
     for k, (lab, url, sub, col) in enumerate([("Live prototype", SITE, "tadit.pages.dev", SAFFRON),
-                                              ("Code & results", REPO, "github.com/adit1290codesrank/sih2026", NAVY)]):
+                                              ("Code & results", REPO, "github.com/adit1290codesrank/tadit", NAVY)]):
         y = top + k * 0.56
         b = S.box(c3x, y, c3w, 0.48, fill=col, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.3, shadow=True)
         b.click_action.hyperlink.address = url

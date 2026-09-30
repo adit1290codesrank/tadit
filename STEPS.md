@@ -11,7 +11,7 @@ Deadline rules are in **bold**; follow them rather than waiting.
 ### Step 1: Get the code and environment (primary server, 20 min)
 
 ```bash
-git clone https://github.com/adit1290codesrank/sih2026.git && cd sih2026
+git clone https://github.com/adit1290codesrank/tadit.git && cd tadit
 git checkout main
 python3 -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cu128
@@ -128,7 +128,7 @@ huggingface-cli upload <your-hf-username>/sih-shards runs/overnight/latest.pt ck
 On the burst server:
 
 ```bash
-mkdir -p /dev/shm/w && git clone https://github.com/adit1290codesrank/sih2026.git /dev/shm/w/code
+mkdir -p /dev/shm/w && git clone https://github.com/adit1290codesrank/tadit.git /dev/shm/w/code
 cd /dev/shm/w/code && git checkout main
 export BASE=https://huggingface.co/datasets/<your-hf-username>/sih-shards/resolve/main
 export HF_TOKEN=<your token>

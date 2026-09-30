@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { dayHm, utcToIst, type Forecast, type Manifest } from "./data";
 
-const REPO = "https://github.com/adit1290codesrank/sih2026";
+const REPO = "https://github.com/adit1290codesrank/tadit";
 const INPUT_NAMES: Record<string, string> = { ir: "Satellite", vil: "Radar", lght: "Lightning", nwp: "Weather model" };
 
 export default function AboutDrawer(p: { manifest: Manifest; f: Forecast | null; description: string; onClose(): void }) {
