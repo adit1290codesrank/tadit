@@ -127,6 +127,8 @@ All lead times come out in one pass (SimVP-style), so the model is fast and comp
 
 ## 3. Time budget: about 11 h of training, ≈ 27–30 4060 Ti-hours
 
+This is the original plan. The runs used an RTX 5060 Ti 16 GB as the primary GPU, and the burst server was not used.
+
 | When | Where | Wall clock | Run |
 |---|---|---|---|
 | Day 1 H10–13 | 4060 Ti | 0.5 h | smoke test: loss falls, measure throughput |

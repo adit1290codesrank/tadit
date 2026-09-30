@@ -67,7 +67,7 @@ scripts/
   burst.sh           3-hour burst runbook (setup | smoke | train | eval)
   make_synthetic.py  synthetic shards
   crossover.py       0-6 h scorecard: lightning CSI per lead hour, tier 1 vs tier 2 vs raw HRRR
-configs/  dev.yaml (4060 Ti)  burst.yaml (5090)  smoke.yaml (CPU)
+configs/  dev.yaml (RTX 5060 Ti 16 GB)  burst.yaml (5090)  smoke.yaml (CPU)
 ```
 
 ## Quickstart
@@ -104,7 +104,7 @@ python -m nowcast.extended build --shards shards --nwp work/nwp --out ext
 ## Training & evaluation
 
 ```bash
-# overnight fallback on the 4060 Ti (9 h wall clock; LR schedule fits the deadline)
+# overnight run on the 16 GB primary GPU, an RTX 5060 Ti (9 h wall clock; LR schedule fits the deadline)
 python -m nowcast.train --config configs/dev.yaml
 
 # burst server: see docs/PLAN.md §3 and scripts/burst.sh

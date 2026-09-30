@@ -16,7 +16,7 @@ That settles what can be computed ahead of time:
 - **Future forecasts:** they can't be precomputed, because the satellite scans they need don't exist yet. A live site needs the GPU machine to run the model on a schedule, after each new scan arrives, and upload the new files. The host still only serves files. See [Later: scheduled runs](#later-scheduled-runs).
 
 ```
-GPU machine (4060 Ti)                                   any machine with Node 22       Cloudflare Pages
+GPU machine (RTX 5060 Ti)                               any machine with Node 22       Cloudflare Pages
 nowcast.india.run  ->  results/india*/*.json + .npz  ->  export_site.py  ->  site/public/data/  ->  npm run build  ->  web/dist/  ->  wrangler deploy  ->  CDN
      (torch)             (forecast + map arrays)        (numpy, pyproj)       (JSON + PNG)          (copies data in)                  (static files)
 ```

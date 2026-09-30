@@ -1,7 +1,13 @@
 # Submission results (frozen 29 Sep 2026; tier 2 extended to 6 h the same evening)
 
-These are the numbers the submission is built on. A later tier-1 model replaces them only if it beats this
+These are the numbers the submission is built on. A later tier-1 model was to replace them only if it beat this
 checkpoint **on validation** by 10:00 IST on 30 Sep.
+
+**30 Sep: the 6,000-event retrain was checked and not adopted.** `runs/full6k` resumed from this checkpoint on
+6,000 training events. Its best snapshot (step 72,950, 1.17M samples) scored validation lightning CSI 0.654 / 0.560
+/ 0.500 for hours 1–3, against 0.649 / 0.546 / 0.487 for this checkpoint, with the same evaluation. The gain is
+small (up to +0.014), the run overfit after that point, and the slides were already built on these numbers, so
+the frozen checkpoint stays. It is a next step, not a result.
 
 ## Tier-1 checkpoint (0–3 h)
 - `runs/snaps/latest_0611.pt` (not in git): an hourly snapshot of the overnight run `runs/overnight`.
@@ -31,6 +37,8 @@ checkpoint **on validation** by 10:00 IST on 30 Sep.
 - `*_gk2a_check.json`: storm-location check against GK2A cloud tops observed after issue time
   (`scripts/check_india_gk2a.py`). It is a proxy, not lightning verification.
 - The Kolkata 08Z run was issued after that storm's peak; 06Z is the fair case.
+- `results/us/*.json`: one US city case (Oklahoma City) in the same format as the India runs, with its
+  `*_ltg_check.json` against GLM (`scripts/us_case.py`).
 - `figures/` (US scorecard, ablations, examples, GK2A India maps) and `figures/insat/` (INSAT India maps):
   `python scripts/make_figures.py --results results --out figures --switch-hour 3`.
 
@@ -86,5 +94,22 @@ Two experiments on the Guwahati case (`results/ne2021/`), both negative, reporte
 - **ISRO Cherrapunji DWR** (MOSDAC, `scripts/cfradial_to_maxz.py`) could not see this storm: it was 150-230 km
   north, behind the Shillong plateau. The radar was not used. Its archive also has gaps (no data for 20-21
   Mar 2023, 31 Mar 2024 or after 04:30 UTC on 1 Apr 2021).
+
+## US city case: Oklahoma City, 26 Aug 2019 (the site's US example)
+A held-out test storm (after 1 Jun 2019, never seen in training), run like the India cases but with the inputs
+the model was built for: GOES-16 IR, NEXRAD VIL, GLM and HRRR. `scripts/us_case.py` picks it from the 600 test
+events. 67 of them cover one of 13 cities near 98 W, and the storm with the most GLM flashes within 40 km of a city
+in the 3 h after issue is taken. **It is picked on observed lightning, not on forecast skill.** Issued 01:45 UTC
+27 Aug (20:45 local, 26 Aug). SEVIR events are 4 h long, so it covers tier 1 (hours 1–3) only.
+
+| hour | P at city | 16 km cells with lightning | CSI at P>=0.2 | CSI at P>=0.4 | persistence |
+|---|---|---|---|---|---|
+| 1 | 0.91 | 99 | 0.49 | 0.61 | 0.52 |
+| 2 | 0.91 | 94 | 0.39 | 0.54 | 0.33 |
+| 3 | 0.77 | 116 | 0.43 | 0.55 | 0.18 |
+
+Scored the same way as the India check, against GLM flashes (8 km cells) in the 384 km patch. One storm is an
+illustration, not a score: the test-set numbers above are the evidence. It also shows the gap to India, where the
+same model gets CSI ~0.2–0.3 without radar or a lightning feed.
 
 Trained on US GLM lightning, adapted to INSAT/GFS, not yet verified against Indian lightning observations.
