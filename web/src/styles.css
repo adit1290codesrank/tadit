@@ -215,6 +215,8 @@ h1, h2, h3, p { margin: 0; font-weight: 400; }
 .drawer summary::after { content: "+"; color: var(--mute); }
 .drawer details[open] summary::after { content: "–"; }
 .drawer .sect { display: grid; gap: var(--md); padding-top: var(--md); font-size: 14px; line-height: 20px; color: var(--body); }
+.drawer.wide { width: min(760px, 100%); }
+.us-video { width: 100%; border-radius: var(--r-sm); background: var(--canvas-soft); }
 .drawer ul { margin: 0; padding-left: var(--lg); display: grid; gap: var(--sm); }
 
 /* Loading / error (ex-empty-state-card, ex-toast) */

@@ -6,6 +6,7 @@ Reads what the pipeline already writes:
   results/india/<id>.json        India forecasts (nowcast.india.run)
   results/india/<id>.npz         their maps (optional; on the server, not in git)
   results/india/<id>_gk2a_check.json   storm-location checks (optional)
+  results/us/<id>.json / .npz    US test-storm cases (scripts/us_case.py), same format
 and writes a self-contained folder the site serves as-is (schema: docs/SITE_DATA.md):
   <out>/manifest.json, scores.json, forecasts/<id>.json, forecasts/<id>/*.png, figures/*.png
 
@@ -218,7 +219,7 @@ def observed_points(strikes, center, issue):
         s = s[(rr >= 0) & (rr < 24) & (cc >= 0) & (cc < 24)]
     if not len(s):
         return None
-    pts = lambda w: [[round(float(a), 3), round(float(b), 3)] for a, b in zip(w.lon, w.lat)]
+    pts = lambda w: sorted({(round(float(a), 3), round(float(b), 3)) for a, b in zip(w.lon, w.lat)})  # one dot per place
     win = lambda a, b: s[(s.t > t0 + a) & (s.t <= t0 + b)]
     return {"steps": {str(m): pts(win((m - 10) * 60, m * 60)) for m in range(10, 181, 10)},
             "hourly": {str(h): pts(win((h - 1) * 3600, h * 3600)) for h in range(1, 7)}}
@@ -236,7 +237,7 @@ def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "",
     tile = prov.get("tile", {})
     city = tile.get("id", fid.split("_")[0])
     center = (float(tile["center_lat"]), float(tile["center_lon"]))
-    city_ll = CITIES.get(city, center)
+    city_ll = (tile["city_lat"], tile["city_lon"]) if "city_lat" in tile else CITIES.get(city, center)  # US cases carry their own
     issue = dt.datetime.fromisoformat(prov["issue_time_utc"])
     issue_ist = issue + IST
 
@@ -271,7 +272,7 @@ def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "",
         "kind": meta.get("kind", "case"),
         "issue_utc": _iso(issue), "issue_ist": _iso(issue_ist),
         "valid_until_ist": _iso(issue_ist + dt.timedelta(hours=max([x["lead_hour"] for x in hours], default=0))),
-        "tile": {"center": [center[1], center[0]], "corners": tile_corners(*center), "size_km": 384},
+        "tile": {"center": [center[1], center[0]], "corners": tile.get("corners") or tile_corners(*center), "size_km": 384},
         "hours": hours,
         "peak_risk": max((x["risk"] for x in hours), key=["LOW", "MODERATE", "HIGH"].index, default=None),
         "inputs": inputs,
@@ -305,7 +306,7 @@ def export_forecast(json_path: str, out_dir: str, cases: dict, suffix: str = "",
     if observed is not None:
         pts = observed_points(observed[0], center, issue)
         if pts:
-            doc["observed"] = {"source": observed[1], **pts}
+            doc["observed"] = {"source": r.get("observed_source", observed[1]), **pts}
 
     npz_path = json_path[:-5] + ".npz"
     if os.path.exists(npz_path):
@@ -372,7 +373,8 @@ def main(argv=None) -> dict:
         json.dump(scores, f, indent=1, allow_nan=False)
 
     forecasts = []
-    for sub, suffix in (("india", ""), ("india_insat", "_insat")):  # INSAT runs share stems with GK2A ones
+    # INSAT runs share stems with GK2A ones; us/ holds US test-storm cases (scripts/us_case.py)
+    for sub, suffix in (("india", ""), ("india_insat", "_insat"), ("us", "")):
         for p in sorted(glob.glob(os.path.join(args.results, sub, "*.json"))):
             if p.endswith("_check.json"):  # _gk2a_check, _ltg_check: verification files, not forecasts
                 continue
@@ -390,6 +392,12 @@ def main(argv=None) -> dict:
         for p in sorted(glob.glob(os.path.join(args.figures, "*.png"))):
             shutil.copy(p, os.path.join(out, "figures", os.path.basename(p)))
             figures.append(f"figures/{os.path.basename(p)}")
+    us_example = None  # a US test storm (make_animation.py) with real radar and GLM lightning, for the site's US panel
+    if args.figures and os.path.isfile(os.path.join(args.figures, "anim_example_1.gif")):
+        shutil.copy(os.path.join(args.figures, "anim_example_1.gif"), os.path.join(out, "figures", "anim_example_1.gif"))
+        us_example = {"animation": "figures/anim_example_1.gif",
+                      "csi_by_hour": {k: scores["series"][k]["csi_by_hour"] for k in ("full", "persistence")
+                                      if k in scores["series"]}}
 
     boundary = None
     if args.boundary:
@@ -406,6 +414,7 @@ def main(argv=None) -> dict:
         "scores": "scores.json",
         "boundary": boundary,
         "figures": figures,
+        "us_example": us_example,
         "forecasts": sorted(forecasts, key=lambda x: x["issue_utc"], reverse=True),
     }
     with open(os.path.join(out, "manifest.json"), "w") as f:

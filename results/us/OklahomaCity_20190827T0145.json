@@ -1,0 +1,120 @@
+{
+ "provenance": {
+  "issue_time_utc": "2019-08-27T01:45:00",
+  "tile": {
+   "id": "Oklahoma City",
+   "center_lat": 35.456128481288424,
+   "center_lon": -97.51422178304477,
+   "city_lat": 35.468,
+   "city_lon": -97.516,
+   "corners": [
+    [
+     -99.67061,
+     37.17871
+    ],
+    [
+     -95.3364,
+     37.16037
+    ],
+    [
+     -95.45003,
+     33.70783
+    ],
+    [
+     -99.5993,
+     33.72506
+    ]
+   ],
+   "sevir_id": "S851388"
+  },
+  "satellite": {
+   "source": "GOES-16 ABI 6.9 / 10.7 um (SEVIR)",
+   "status": "live",
+   "scans": [
+    {
+     "scan": "2019-08-27T01:15:00"
+    },
+    {
+     "scan": "2019-08-27T01:20:00"
+    },
+    {
+     "scan": "2019-08-27T01:25:00"
+    },
+    {
+     "scan": "2019-08-27T01:30:00"
+    },
+    {
+     "scan": "2019-08-27T01:35:00"
+    },
+    {
+     "scan": "2019-08-27T01:40:00"
+    },
+    {
+     "scan": "2019-08-27T01:45:00"
+    }
+   ]
+  },
+  "radar": {
+   "source": "NEXRAD VIL mosaic (SEVIR)",
+   "status": "live"
+  },
+  "lightning": {
+   "source": "GOES-16 GLM (SEVIR)",
+   "status": "live",
+   "strikes_in_window": 5816
+  },
+  "nwp": [
+   {
+    "model": "hrrr",
+    "valid": "2019-08-27T01:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "hrrr",
+    "valid": "2019-08-27T02:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "hrrr",
+    "valid": "2019-08-27T03:00:00",
+    "status": "ok"
+   },
+   {
+    "model": "hrrr",
+    "valid": "2019-08-27T04:00:00",
+    "status": "ok"
+   }
+  ]
+ },
+ "summary": [
+  {
+   "lead_hour": 1,
+   "source": "tier1",
+   "p_lightning_at_location": 0.913,
+   "p_lightning_max_in_tile": 0.969,
+   "risk": "HIGH"
+  },
+  {
+   "lead_hour": 2,
+   "source": "tier1",
+   "p_lightning_at_location": 0.906,
+   "p_lightning_max_in_tile": 0.906,
+   "risk": "HIGH"
+  },
+  {
+   "lead_hour": 3,
+   "source": "tier1",
+   "p_lightning_at_location": 0.765,
+   "p_lightning_max_in_tile": 0.879,
+   "risk": "HIGH"
+  }
+ ],
+ "observed_source": "GOES-16 GLM satellite lightning (flashes)",
+ "model_trained_on": "Trained on US storms before 2019 (SEVIR: GOES-16, NEXRAD, GLM, HRRR). This storm is from the held-out test period (after 1 Jun 2019), which the model never saw.",
+ "tier1_inputs_present": {
+  "ir": true,
+  "vil": true,
+  "lght": true,
+  "nwp": true
+ }
+}

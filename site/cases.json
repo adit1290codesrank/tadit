@@ -47,5 +47,10 @@
     "title": "Assam storms, 16 Apr 2021",
     "description": "Issued at 18:30 IST, before the evening storms formed, on INSAT and GFS only (no radar or lightning feed). Checked against real FY-4A satellite lightning: the model beat persistence, and tier 2 gave MODERATE (36 %) for hour 6, the hour the storm reached Guwahati. Skill is modest (CSI about 0.2-0.3).",
     "kind": "case"
+  },
+  "OklahomaCity_20190827T0145": {
+    "title": "Oklahoma City storms, USA, 26 Aug 2019",
+    "description": "A real US storm the model never saw in training (held-out 2019 test period), run with the inputs it was built for: GOES-16 satellite, NEXRAD radar, GLM lightning and HRRR. Issued 8:45 pm local time (01:45 UTC, 27 Aug). Forecast: HIGH at Oklahoma City for all 3 hours (91%, 91%, 77%). Checked against the GLM lightning that followed: CSI 0.61 / 0.54 / 0.55 for hours 1-3, against 0.52 / 0.33 / 0.18 for persistence. Picked for lightning near a city, not for forecast skill. SEVIR events are 4 h long, so there is no 4-6 h outlook here.",
+    "kind": "case"
   }
 }

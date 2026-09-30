@@ -74,7 +74,7 @@ def test_forecasts_without_maps_and_colour_ramp(tmp_path):
     res = tmp_path / "results"  # a copy without the .npz maps, which exist wherever the pipeline has run
     shutil.copytree(ROOT / "results", res, ignore=shutil.ignore_patterns("*.npz"))
     m = export_site.main(["--results", str(res), "--out", str(tmp_path / "site")])
-    assert len(m["forecasts"]) == 10 and not any(f["has_maps"] for f in m["forecasts"])  # 5 GK2A + 5 INSAT
+    assert len(m["forecasts"]) == 11 and not any(f["has_maps"] for f in m["forecasts"])  # 5 GK2A + 5 INSAT + 1 US
     ids = {f["id"] for f in m["forecasts"]}
     assert "Kolkata_20240509T0600_insat" in ids and "Kolkata_20240509T0600" in ids
     rgba = export_site.colorize(np.array([0.0, 0.04, 0.1, 0.5, 1.0]), export_site.LGHT_STOPS)

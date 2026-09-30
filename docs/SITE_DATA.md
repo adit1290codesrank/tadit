@@ -6,8 +6,11 @@ outputs into static files. The site (Cloudflare Pages / Vercel) only reads those
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json \
     --boundary data/boundaries/india_states.geojson \
-    --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv --out site/public/data
+    --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv \
+               results/us/OklahomaCity_20190827T0145_glm.csv --out site/public/data
 ```
+
+The US case (`results/us/`) comes from `python scripts/us_case.py --ckpt runs/snaps/latest_0611.pt`, which also writes its GLM flash list (`*_glm.csv`, server only).
 
 `--observed` takes lightning flash lists (time, lat, lon), e.g. from `scripts/lmi_to_flashes.py`. They live on the server
 under `data/` (not in git). Without it, the export works and no forecast carries `observed`.
@@ -29,6 +32,7 @@ data/
   forecasts/<id>/lght_<mmm>.png  tier-1 lightning probability, lead mmm minutes (010 ... 180)
   forecasts/<id>/vil_<mmm>.png   tier-1 storm intensity (VIL) at the same step
   figures/*.png                  slide figures (optional)
+  figures/anim_example_1.gif     US test-storm animation (optional)
   india_boundary.geojson         only if --boundary is given (must be Survey of India)
 ```
 
@@ -44,6 +48,7 @@ All paths inside the JSONs are relative to `data/`.
 | `model.tier1` / `model.tier2` | checkpoint step / samples / epoch |
 | `forecasts[]` | `id, city, lat, lon, title, kind ("case" or "run"), issue_ist, issue_utc, peak_risk, has_maps, file`, newest first |
 | `figures[]` | slide figure paths |
+| `us_example` | `{animation, csi_by_hour: {full, persistence}}`: the US test-storm animation and tier-1 test CSI per hour, or null |
 | `boundary` | `"india_boundary.geojson"` or `null` |
 
 ## `forecasts/<id>.json`

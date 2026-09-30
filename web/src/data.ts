@@ -12,7 +12,9 @@ export type Manifest = {
   generated_utc: string; honest_label: string; switch_hour: number | null;
   model: { tier1: Record<string, unknown>; tier2: Record<string, unknown> };
   boundary: string | null; forecasts: ManifestEntry[];
+  us_example?: UsExample | null;
 };
+export type UsExample = { animation: string; csi_by_hour: { full?: Record<string, number>; persistence?: Record<string, number> } };
 export type Hour = {
   lead_hour: number; window_ist: [string, string]; source: "tier1" | "tier2" | null;
   p_location: number | null; p_tile_max: number | null; risk: Risk | null; advice: string;

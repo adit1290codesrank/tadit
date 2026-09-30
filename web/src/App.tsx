@@ -4,6 +4,7 @@ import TopBar from "./TopBar";
 import TimeBar from "./TimeBar";
 import RegionPanel, { TABS, type Tab } from "./RegionPanel";
 import AboutDrawer from "./AboutDrawer";
+import UsDrawer from "./UsDrawer";
 import {
   getJSON, groupRuns, positions, overlayAt, observedAt, intensityAt, cssGradient, parseHash, toHash,
   LGHT_STOPS, VIL_STOPS, type Forecast, type Manifest, type View, type Layer,
@@ -14,6 +15,7 @@ const ok = (x: Loaded | undefined): x is Forecast => !!x && !("error" in x);
 
 export default function App() {
   const [manifest, setManifest] = useState<Manifest | null>(null);
+  const [usOpen, setUsOpen] = useState(false);
   const [fatal, setFatal] = useState<string | null>(null);
   const [boundary, setBoundary] = useState<GeoJSON.FeatureCollection | null>(null);
   const [fcs, setFcs] = useState<Record<string, Loaded>>({});
@@ -94,13 +96,14 @@ export default function App() {
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      if (drawer) setDrawer(false);
+      if (usOpen) setUsOpen(false);
+      else if (drawer) setDrawer(false);
       else if (tab) set({ tab: undefined });
       else if (ref) select(null);
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [drawer, tab, ref]);
+  }, [usOpen, drawer, tab, ref]);
 
   // Playback: constant wall-clock rate per position; stops at the end.
   useEffect(() => {
@@ -144,7 +147,8 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar runs={runs} run={run} validUntil={loaded[0]?.valid_until_ist ?? null} onRun={setRun} onAbout={() => setDrawer(true)} />
+      <TopBar runs={runs} run={run} validUntil={loaded[0]?.valid_until_ist ?? null} onRun={setRun} onAbout={() => setDrawer(true)}
+        onUs={manifest?.us_example ? () => setUsOpen(true) : undefined} />
 
       <main className={`stage${ref ? " open" : ""}`}>
         <section className="canvas" aria-label="Map">
@@ -219,6 +223,7 @@ export default function App() {
       </footer>
 
       {drawer && manifest && <AboutDrawer manifest={manifest} f={sel ?? loaded[0] ?? null} description={sel ? description : loaded[0]?.description ?? ""} onClose={() => setDrawer(false)} />}
+      {usOpen && manifest?.us_example && <UsDrawer us={manifest.us_example} onClose={() => setUsOpen(false)} />}
     </div>
   );
 }

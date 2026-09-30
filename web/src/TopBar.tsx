@@ -4,7 +4,7 @@ import { dayHm, hm, riskShort, type Run } from "./data";
 export const BRAND = "Tadit"; // तड़ित, lightning
 
 export default function TopBar(p: {
-  runs: Run[]; run: Run | null; validUntil: string | null; onRun(key: string): void; onAbout(): void;
+  runs: Run[]; run: Run | null; validUntil: string | null; onRun(key: string): void; onAbout(): void; onUs?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -47,6 +47,7 @@ export default function TopBar(p: {
       </div>
       <span className="spacer" />
       <span className="lang-slot" aria-hidden />
+      {p.onUs && <button className="pill" onClick={p.onUs}>Tested on US storms</button>}
       <button className="round" aria-label="About this forecast" onClick={p.onAbout}>i</button>
     </header>
   );
