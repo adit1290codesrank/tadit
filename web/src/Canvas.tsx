@@ -19,6 +19,7 @@ export type CanvasProps = {
   t: number;
   layer: Layer;
   boundary: GeoJSON.FeatureCollection | null;
+  boundaryUs?: GeoJSON.FeatureCollection | null; // US cases only (US Census states)
   onSelectRegion(id: string): void;
   onHover(id: string | null): void;
 };
@@ -26,6 +27,7 @@ export type CanvasProps = {
 maplibregl.setWorkerUrl(new URL(workerUrl, location.href).href); // v6 cannot find its worker once bundled
 
 const INDIA: [[number, number], [number, number]] = [[68, 6], [97.5, 37.5]];
+const CONUS: [[number, number], [number, number]] = [[-125, 24], [-66.5, 49.5]]; // US test-storm cases
 const STYLE: maplibregl.StyleSpecification = {
   version: 8, sources: {},
   layers: [{ id: "bg", type: "background", paint: { "background-color": "#0a0a0a" } }], // no basemap, no borders
@@ -82,6 +84,16 @@ export default function Canvas(p: CanvasProps) {
     m.addLayer({ id: "soi-fill", type: "fill", source: "soi", paint: { "fill-color": "#1a1c20" } }, firstRegionLayer(m));
     m.addLayer({ id: "soi-line", type: "line", source: "soi", paint: { "line-color": "#363a3f", "line-width": 0.6 } }, firstRegionLayer(m));
   }), [p.boundary]);
+
+  // US state outlines, for the US test-storm cases. Separate source so each keeps its own attribution.
+  useEffect(() => whenReady((m) => {
+    for (const id of ["us-line", "us-fill"]) if (m.getLayer(id)) m.removeLayer(id);
+    if (m.getSource("us")) m.removeSource("us");
+    if (!p.boundaryUs) return;
+    m.addSource("us", { type: "geojson", data: p.boundaryUs, attribution: "US states: US Census Bureau" });
+    m.addLayer({ id: "us-fill", type: "fill", source: "us", paint: { "fill-color": "#1a1c20" } }, firstRegionLayer(m));
+    m.addLayer({ id: "us-line", type: "line", source: "us", paint: { "line-color": "#363a3f", "line-width": 0.6 } }, firstRegionLayer(m));
+  }), [p.boundaryUs]);
 
   // Regions: overlay image, tile outline and glow marker per region.
   const regionKey = p.regions.map((r) => r.id).join("|");
@@ -167,12 +179,14 @@ export default function Canvas(p: CanvasProps) {
     });
   }, [p.regions, p.t, p.layer, p.selected]);
 
-  // Framing: India at L0, the tile at L1/L2.
+  // Framing: India at L0 (or the run's own tiles when they lie outside India, e.g. a US case), the tile at L1/L2.
   useEffect(() => {
     const m = map.current;
     if (!m) return;
     const r = p.regions.find((x) => x.id === p.selected);
-    m.fitBounds(r ? cornersBounds(r.corners) : INDIA, { padding: 48, duration: 700 });
+    const inIndia = (x: Region) => x.lon >= INDIA[0][0] && x.lon <= INDIA[1][0] && x.lat >= INDIA[0][1] && x.lat <= INDIA[1][1];
+    const l0 = p.regions.length && !p.regions.some(inIndia) ? CONUS : INDIA;
+    m.fitBounds(r ? cornersBounds(r.corners) : l0, { padding: 48, duration: 700 });
     m.once("moveend", sizeGlows);
   }, [p.selected, regionKey]);
 

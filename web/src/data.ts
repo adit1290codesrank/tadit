@@ -11,7 +11,7 @@ export type ManifestEntry = {
 export type Manifest = {
   generated_utc: string; honest_label: string; switch_hour: number | null;
   model: { tier1: Record<string, unknown>; tier2: Record<string, unknown> };
-  boundary: string | null; forecasts: ManifestEntry[];
+  boundary: string | null; boundary_us?: string | null; forecasts: ManifestEntry[];
   us_example?: UsExample | null;
 };
 export type UsExample = { animation: string; csi_by_hour: { full?: Record<string, number>; persistence?: Record<string, number> } };
@@ -37,7 +37,7 @@ export type Forecast = {
     satellite: { status: Status; source: string | null; scans_utc: string[] };
     radar: { status: Status; source: string | null; detail: string | null };
     lightning: { status: Status; source: string | null };
-    nwp: { status: Status; runs: { model: string; init: string; fxx: number; valid: string; status: string }[] };
+    nwp: { status: Status; runs: { model: string; init?: string | null; fxx?: number | null; valid: string; status: string }[] };
   };
   model_inputs_used: Record<string, boolean> | null;
   honest_label: string;

@@ -68,7 +68,7 @@ From the repo root, on the machine with the `.npz` files:
 
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json \
-  --boundary data/boundaries/india_states.geojson \
+  --boundary data/boundaries/india_states.geojson --boundary-us data/boundaries/us_states.geojson \
   --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv \
              results/us/OklahomaCity_20190827T0145_glm.csv \
   --out site/public/data

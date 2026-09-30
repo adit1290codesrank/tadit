@@ -183,7 +183,7 @@ function Inputs(p: P) {
   ];
   return (
     <>
-      <p className="hint">The data this forecast used. Indian radar and lightning feeds are not connected yet.</p>
+      <p className="hint">The data this forecast used.{i.radar.status === "missing" || i.lightning.status === "missing" ? " Indian radar and lightning feeds are not connected yet." : ""}</p>
       <dl className="kv body-sm">
         {rows.map(([k, s, d]) => (
           <div key={k} style={{ display: "contents" }}>
@@ -221,7 +221,8 @@ function nwpLine(f: Forecast) {
   if (!runs.length) return "Not available";
   const models = [...new Set(runs.map((r) => r.model.toUpperCase()))].join(", ");
   const ok = runs.filter((r) => r.status === "ok").length;
-  return `${models} run from ${hm(utcToIst(runs[0].init))} IST, ${ok} of ${runs.length} hours received`;
+  const from = runs[0].init ? ` run from ${hm(utcToIst(runs[0].init))} IST` : "";
+  return `${models}${from}, ${ok} of ${runs.length} hours received`;
 }
 
 function LightningCheck({ f }: { f: Forecast }) {
@@ -233,7 +234,7 @@ function LightningCheck({ f }: { f: Forecast }) {
       <p className="eyebrow">Checked against real lightning</p>
       <p className="hint">Lightning seen by {src}. A 16 km square counts as struck if lightning hit it during the hour; CSI is shown with the forecast counted as a "yes" from 20 % (MODERATE on this site) and from 40 %. Persistence assumes the lightning at issue time stays where it is.</p>
       <table className="table">
-        <thead><tr><th>Hour</th><th>Squares struck</th><th style={{ whiteSpace: "nowrap" }}>CSI ≥20%</th><th style={{ whiteSpace: "nowrap" }}>CSI ≥40%</th><th>Persistence</th></tr></thead>
+        <thead><tr><th>Hour</th><th>Squares hit</th><th>CSI ≥20%</th><th>CSI ≥40%</th><th>Persist&shy;ence</th></tr></thead>
         <tbody>
           {c.hours.map((h) =>
             h.status !== "scored" ? (

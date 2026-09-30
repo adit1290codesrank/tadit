@@ -186,7 +186,10 @@ h1, h2, h3, p { margin: 0; font-weight: 400; }
 .hourstrip .gap { width: 1px; align-self: stretch; border-left: 1px dashed var(--canvas-mid); }
 
 .tabs { display: flex; flex-wrap: wrap; gap: var(--sm); }
-.tabbody { display: grid; gap: var(--lg); padding: var(--lg); }
+.tabbody { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--lg); padding: var(--lg); }
+.tabbody .table { table-layout: fixed; }
+.tabbody .table th { letter-spacing: 0.4px; font-size: 11px; padding: var(--sm) 4px; vertical-align: bottom; }
+.tabbody .table th:first-child { width: 44px; }
 .kv { display: grid; grid-template-columns: auto 1fr; gap: var(--sm) var(--lg); align-items: baseline; margin: 0; }
 .kv dd { margin: 0; }
 

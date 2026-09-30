@@ -31,6 +31,7 @@ from torch.utils.data import default_collate  # noqa: E402
 
 from check_india_lightning import _scores  # noqa: E402
 from nowcast.data.dataset import NowcastDataset, prepare_batch  # noqa: E402
+from nowcast.data.hrrr import LEAD_H  # noqa: E402
 from nowcast.data.sevir import event_grid_latlon  # noqa: E402
 from nowcast.evaluate import load_model  # noqa: E402
 from nowcast.metrics import pool_max  # noqa: E402
@@ -172,8 +173,9 @@ def main():
         "satellite": {"source": "GOES-16 ABI 6.9 / 10.7 um (SEVIR)", "status": "live", "scans": [{"scan": t} for t in frame_times]},
         "radar": {"source": "NEXRAD VIL mosaic (SEVIR)", "status": "live"},
         "lightning": {"source": "GOES-16 GLM (SEVIR)", "status": "live", "strikes_in_window": int(lg[s: i0 + 1].sum())},
-        "nwp": [{"model": "hrrr", "valid": dt.datetime.fromtimestamp(base + 3600 * j, dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
-                 "status": "ok" if ok else "missing"} for j, ok in enumerate(item["nwp_ok"])],
+        "nwp": [{"model": "hrrr", "fxx": LEAD_H, "status": "ok" if ok else "missing",  # valid at H from the run started at H - LEAD_H
+                 **{k: dt.datetime.fromtimestamp(base + 3600 * (j - d), dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+                    for k, d in (("init", LEAD_H), ("valid", 0))}} for j, ok in enumerate(item["nwp_ok"])],
     }
     os.makedirs(args.out, exist_ok=True)
     stem = os.path.join(args.out, f"{city.replace(' ', '')}_{t0:%Y%m%dT%H%M}")

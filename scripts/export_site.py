@@ -351,6 +351,7 @@ def main(argv=None) -> dict:
     ap.add_argument("--figures", help="folder of slide figures to publish too (optional)")
     ap.add_argument("--cases", help="JSON {forecast_id: {title, description, kind, hide}} (optional)")
     ap.add_argument("--boundary", help="India boundary GeoJSON, Survey of India (data/boundaries/india_states.geojson); never Natural Earth")
+    ap.add_argument("--boundary-us", help="US state outlines for the US cases (data/boundaries/us_states.geojson, US Census)")
     ap.add_argument("--observed", nargs="+", help="observed lightning to draw on the maps: flash/strike CSVs (time, lat, lon)")
     ap.add_argument("--observed-source", default="FY-4A LMI satellite lightning (flashes)")
     ap.add_argument("--out", default="site/public/data")
@@ -403,6 +404,10 @@ def main(argv=None) -> dict:
     if args.boundary:
         shutil.copy(args.boundary, os.path.join(out, "india_boundary.geojson"))
         boundary = "india_boundary.geojson"
+    boundary_us = None
+    if args.boundary_us:
+        shutil.copy(args.boundary_us, os.path.join(out, "us_boundary.geojson"))
+        boundary_us = "us_boundary.geojson"
 
     t1 = scores["series"].get("full", {}).get("run", {})
     t2 = scores["series"].get("ext", {}).get("run", {})
@@ -413,6 +418,7 @@ def main(argv=None) -> dict:
         "model": {"tier1": t1, "tier2": t2},
         "scores": "scores.json",
         "boundary": boundary,
+        "boundary_us": boundary_us,
         "figures": figures,
         "us_example": us_example,
         "forecasts": sorted(forecasts, key=lambda x: x["issue_utc"], reverse=True),

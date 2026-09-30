@@ -5,7 +5,7 @@ outputs into static files. The site (Cloudflare Pages / Vercel) only reads those
 
 ```bash
 python scripts/export_site.py --results results --figures figures --cases site/cases.json \
-    --boundary data/boundaries/india_states.geojson \
+    --boundary data/boundaries/india_states.geojson --boundary-us data/boundaries/us_states.geojson \
     --observed data/fy4a_lmi/flashes_20230902_odisha.csv data/fy4a_lmi/flashes_20210416_ne.csv \
                results/us/OklahomaCity_20190827T0145_glm.csv --out site/public/data
 ```
@@ -48,6 +48,7 @@ All paths inside the JSONs are relative to `data/`.
 | `model.tier1` / `model.tier2` | checkpoint step / samples / epoch |
 | `forecasts[]` | `id, city, lat, lon, title, kind ("case" or "run"), issue_ist, issue_utc, peak_risk, has_maps, file`, newest first |
 | `figures[]` | slide figure paths |
+| `boundary_us` | US state outlines for the US cases (`us_boundary.geojson`, US Census Bureau, public domain), or null |
 | `us_example` | `{animation, csi_by_hour: {full, persistence}}`: the US test-storm animation and tier-1 test CSI per hour, or null |
 | `boundary` | `"india_boundary.geojson"` or `null` |
 

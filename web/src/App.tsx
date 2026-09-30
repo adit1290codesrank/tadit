@@ -18,6 +18,7 @@ export default function App() {
   const [usOpen, setUsOpen] = useState(false);
   const [fatal, setFatal] = useState<string | null>(null);
   const [boundary, setBoundary] = useState<GeoJSON.FeatureCollection | null>(null);
+  const [boundaryUs, setBoundaryUs] = useState<GeoJSON.FeatureCollection | null>(null);
   const [fcs, setFcs] = useState<Record<string, Loaded>>({});
   const [view, setView] = useState<View>(() => parseHash(location.hash));
   const [playing, setPlaying] = useState(false);
@@ -32,6 +33,9 @@ export default function App() {
   useEffect(() => {
     if (manifest?.boundary) getJSON<GeoJSON.FeatureCollection>(manifest.boundary).then(setBoundary, () => setBoundary(null));
   }, [manifest?.boundary]);
+  useEffect(() => {
+    if (manifest?.boundary_us) getJSON<GeoJSON.FeatureCollection>(manifest.boundary_us).then(setBoundaryUs, () => setBoundaryUs(null));
+  }, [manifest?.boundary_us]);
 
   const load = useCallback((id: string, file: string) => {
     setFcs((s) => { const n = { ...s }; delete n[id]; return n; });
@@ -165,7 +169,7 @@ export default function App() {
             </div></div>
           ) : (
             <>
-              <Canvas regions={regions} selected={ref?.city ?? null} t={t} layer={layer} boundary={boundary}
+              <Canvas regions={regions} selected={ref?.city ?? null} t={t} layer={layer} boundary={boundary} boundaryUs={boundaryUs}
                 onSelectRegion={select} onHover={() => {}} />
               <div className="legend card">
                 <p className="caption-mono-sm">{layer === "vil" ? "Storm intensity" : "Lightning chance"}</p>
